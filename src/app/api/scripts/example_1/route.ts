@@ -1,33 +1,28 @@
-// app/api/users/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { Client } from '@elastic/elasticsearch'
 
-// Datos de ejemplo (en un caso real, esto vendría de una base de datos)
-let users = [
-  { id: 1, name: 'Juan Pérez', email: 'juan@example.com' },
-  { id: 2, name: 'María García', email: 'maria@example.com' },
-];
-
-// GET - Obtener todos los usuarios
+// CREATING A DOCUMENT
 export async function GET(request: NextRequest) {
   try {
-    // Puedes obtener query parameters si los necesitas
-    const { searchParams } = new URL(request.url);
-    const name = searchParams.get('name');
+    const client = new Client({
+      node: 'http://localhost:9200/'
+    })
+    console.log(await client.info());
     
-    let filteredUsers = users;
-    
-    // Filtrar usuarios si se proporciona un nombre
-    if (name) {
-      filteredUsers = users.filter(user => 
-        user.name.toLowerCase().includes(name.toLowerCase())
-      );
-    }
-    
+    client.indices.create({
+      index:"myindex",
+      settings:{
+        index:{
+          number_of_shards: 3,
+          number_of_replicas: 2
+        }
+      }
+    })
+
     return NextResponse.json({
       success: true,
-      data: filteredUsers,
-      count: filteredUsers.length,
-      message: 'Usuarios obtenidos correctamente'
+      info: await client.info(),
+      message: ''
     }, { 
       status: 200,
       headers: {
@@ -38,54 +33,26 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     return NextResponse.json({
       success: false,
-      error: 'Error al obtener los usuarios',
-      details: error instanceof Error ? error.message : 'Error desconocido'
+      error: '',
+      details: error instanceof Error ? error.message : ''
     }, { status: 500 });
   }
 }
 
-// POST - Crear un nuevo usuario
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    
-    // Validar campos requeridos
-    if (!body.name || !body.email) {
-      return NextResponse.json({
-        success: false,
-        error: 'Nombre y email son requeridos'
-      }, { status: 400 });
-    }
-    
-    // Validar que el email no exista
-    const existingUser = users.find(user => user.email === body.email);
-    if (existingUser) {
-      return NextResponse.json({
-        success: false,
-        error: 'El email ya está registrado'
-      }, { status: 409 });
-    }
-    
-    // Crear nuevo usuario
-    const newUser = {
-      id: users.length + 1,
-      name: body.name,
-      email: body.email,
-    };
-    
-    users.push(newUser);
     
     return NextResponse.json({
       success: true,
-      data: newUser,
-      message: 'Usuario creado correctamente'
+      data: {},
+      message: ''
     }, { status: 201 });
     
   } catch (error) {
     return NextResponse.json({
       success: false,
-      error: 'Error al crear el usuario',
-      details: error instanceof Error ? error.message : 'Error desconocido'
+      error: '',
+      details: error instanceof Error ? error.message : ''
     }, { status: 500 });
   }
 }
