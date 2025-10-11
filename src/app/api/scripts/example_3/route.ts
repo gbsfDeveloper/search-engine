@@ -18,34 +18,14 @@ export async function GET(request: NextRequest) {
       node: process.env.ELASTIC_SEARCH_SERVER || 'http://localhost:9200/',
     })
 
-    client.indices.delete({
-      index:"myindex",
-      ignore_unavailable:true
-    })
-
-    client.indices.create({
-      index:"myindex",
+    const indexMapping = await client.indices.getMapping({
+      index: 'myindex'
     });
-
-    const document = {
-      title: "Sample Document",
-      content: "This is a sample document for Elasticsearch.",
-      timestamp: new Date()
-    };
-
-    const filePath = path.join(process.cwd(), 'public', 'jsons/dummy_data.json');
-    const fileContents = await fs.readFile(filePath, 'utf8');
-    const data = JSON.parse(fileContents);
-
-    for (const doc of data) {
-      const response = await insertDocument(client, 'myindex', doc);
-      console.log(response);
-    }
 
     return NextResponse.json({
       success: true,
       info: await client.info(),
-      data,
+      mapping: indexMapping,
       message: ''
     }, { 
       status: 200,

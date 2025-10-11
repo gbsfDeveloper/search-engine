@@ -5,7 +5,7 @@ import { Client } from '@elastic/elasticsearch'
 export async function GET(request: NextRequest) {
   try {
     const client = new Client({
-      node: 'http://localhost:9200/'
+      node: process.env.ELASTIC_SEARCH_SERVER || 'http://localhost:9200/',
     })
     console.log(await client.info());
     
