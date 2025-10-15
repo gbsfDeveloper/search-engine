@@ -3,14 +3,7 @@ import { Client } from '@elastic/elasticsearch'
 import * as fs from 'node:fs/promises';
 import path from 'path';
 
-// CREATING AN INDEX
-
-const insertDocument = async (client: Client, index: string, document: object) => {
-  return await client.index({
-    index,
-    body: document
-  });
-}
+// GET THE DOCUMENTS' MAPPING OF INDEX
 
 export async function GET(request: NextRequest) {
   try {
