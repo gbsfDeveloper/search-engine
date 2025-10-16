@@ -1,29 +1,106 @@
-import { text } from "stream/consumers";
-import Header from "../../components/header";
+"use client"
+import React, { useState } from "react";
 
-interface ItemCardProps {
+interface IElementalEffects {
+    type: 'fire' | 'shock' | 'corrosive' | 'cryo' | 'radiation';
+    damagePerSecond: number;
+    chanceToApply: number;
+}
+
+interface IWeaponProperties {
+    damage: number;
+    accuracy: number;
+    reloadSpeed: string;
+    fireRate: string;
+    magazineSize: number;
+}
+
+interface IItemAttributes {
+    icon: string;
+    name: string;
+    description: string;
+    manufacturer?: string;
+}
+
+type TWeaponSubtypes = keyof typeof WEAPON_SUBTYPES;
+
+const WEAPON_SUBTYPES = {
+    'shotgun': {english: 'Shotgun', spanish: 'Escopeta'},
+    'sniper': {english: 'Sniper Rifle', spanish: 'Fusil de francotirador'},
+    'assaultRifle': {english: 'Assault Rifle', spanish: 'Fusil de asalto'},
+    'pistol': {english: 'Pistol', spanish: 'Pistola'},
+    'smg': {english: 'Submachine Gun', spanish: 'Subfusil'},
+}
+
+interface IItemCardProps {
   itemName: string;
   itemLevel?: number;
   itemRarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   itemType?: 'weapon' | 'shield' | 'artillery' | 'classMod';
-  itemSubType?: string;
+  itemSubType?: TWeaponSubtypes;
   itemDPS?: number;
   hasElementalEffect?: boolean;
+  weaponProperties?: IWeaponProperties
+  elementalEffects?: IElementalEffects[];
+  attributes?: IItemAttributes[];
+  manufacturer?: string;
+  descriptionText?: string;
+}
+
+const getWeaponName = (itemSubType : TWeaponSubtypes) =>{
+    return WEAPON_SUBTYPES[itemSubType] ? WEAPON_SUBTYPES[itemSubType].spanish : itemSubType;
 }
 
 export default function Page() {
-  return (
-    <ItemCard 
-        itemName="Accelerated Crepuscular Kickballer"
-        itemLevel={50}
-        itemRarity="rare"
-        itemType="weapon"
-        itemDPS={3075}
-        hasElementalEffect={true}
-    >
-        
-    </ItemCard>
-  );
+    const [language, setLanguage] = useState('spanish');
+
+    return (
+        <ItemCard 
+            itemName="Vestigial La venganza de Katagawa"
+            itemLevel={49}
+            itemRarity="legendary"
+            itemType="weapon"
+            itemSubType="sniper"
+            itemDPS={1800}
+            hasElementalEffect={true}
+            elementalEffects={[
+                { 
+                    type: 'fire',
+                    damagePerSecond: 767,
+                    chanceToApply: 27
+                },
+                { 
+                    type: 'shock',
+                    damagePerSecond: 1458,
+                    chanceToApply: 27
+                }
+            ]}
+            weaponProperties={{
+                damage: 4612,
+                accuracy: 79,
+                reloadSpeed: '2.0',
+                fireRate: '0.8',
+                magazineSize: 8
+            }}
+            attributes={[
+                {
+                    icon: 'https://example.com/icon1.png',
+                    name: 'Nubarrón',
+                    description: ''
+                },
+                {
+                    icon: 'https://example.com/icon1.png',
+                    name: 'Maliwan:',
+                    description: 'puede cambiar entre elementos incendiarios y eléctricos'
+                },
+
+            ]}
+            descriptionText="Puedes lastimar a alguien, ¡y ese es mi p#to trabajo!"
+            manufacturer="Maliwan"
+        >
+            
+        </ItemCard>
+    );
 }
 
 
@@ -32,11 +109,27 @@ const  ItemCard = ({
     itemLevel,
     itemRarity = 'common',
     itemType = 'weapon',
-    itemSubType = 'Escopeta',
+    itemSubType = 'shotgun',
     itemDPS,
-    hasElementalEffect = false
- }:ItemCardProps) =>{
+    hasElementalEffect = false,
+    elementalEffects = [],
+    weaponProperties,
+    manufacturer,
+    descriptionText
+ }: IItemCardProps) =>{
     
+    const ElementalDamagesComponent = ({
+        elementalEffect
+    }:{ 
+        elementalEffect: IElementalEffects 
+    }) =>{
+        return <div className="grid grid-cols-3 gap-1 text-center border-t-2 border-b-2 border-shock">
+                    <div className="text-base text-shock">{elementalEffect.type}</div>
+                    <div className="text-base text-shock">{elementalEffect.damagePerSecond} DMG/s</div>
+                    <div className="text-base text-shock">{elementalEffect.chanceToApply}% Chance</div>
+                </div> 
+    }
+
     const TriangleElementsComponent = () =>{
         let trianglesColored = 0;
         let trianglesUncolored = 4;
@@ -105,77 +198,95 @@ const  ItemCard = ({
     }
 
     const cardDynamicStyles = {
-        textColor: 'text-common',
+        textColor: 'text-common col-span-5',
         borderTop: 'border-t-common',
         borderBottom: 'border-b-common',
     } 
     switch (itemRarity) {
         case 'uncommon':
-            cardDynamicStyles.textColor = `text-uncommon`;
+            cardDynamicStyles.textColor = `text-uncommon col-span-5`;
             cardDynamicStyles.borderTop = `border-t-uncommon`;
             cardDynamicStyles.borderBottom = `border-b-uncommon`;
             break;
         case 'rare':
-            cardDynamicStyles.textColor = `text-rare`;
+            cardDynamicStyles.textColor = `text-rare col-span-5`;
             cardDynamicStyles.borderTop = `border-t-rare`;
             cardDynamicStyles.borderBottom = `border-b-rare`;
             break;
         case 'epic':
-            cardDynamicStyles.textColor = `text-epic`;
+            cardDynamicStyles.textColor = `text-epic col-span-5`;
             cardDynamicStyles.borderTop = `border-t-epic`;
             cardDynamicStyles.borderBottom = `border-b-epic`;
             break;
         case 'legendary':
-            cardDynamicStyles.textColor = `text-legendary`;
+            cardDynamicStyles.textColor = `text-legendary col-span-5`;
             cardDynamicStyles.borderTop = `border-t-legendary`;
             cardDynamicStyles.borderBottom = `border-b-legendary`;
             break;
         default:
-            cardDynamicStyles.textColor = `text-common`;
+            cardDynamicStyles.textColor = `text-common col-span-5`;
             cardDynamicStyles.borderTop = `border-t-common`;
             cardDynamicStyles.borderBottom = `border-b-common`;
             break;
-        }
-    const divWithTwoLinesColored = `border-t-2 ${cardDynamicStyles.borderTop} border-b-2 ${cardDynamicStyles.borderBottom}`;
+    }
+
+    const firstSectionContainerStyles = `border-t-2 ${cardDynamicStyles.borderTop} border-b-2 ${cardDynamicStyles.borderBottom}`;
 
     return (
-        <div className="bg-card-background rounded-lg w-[400px] p-5 shadow-lg">
-        <div className={divWithTwoLinesColored}>
+        <div className="bg-card-background rounded-lg w-[420px] p-5 shadow-lg">
+        <div className={firstSectionContainerStyles}>
             <div className="h-2"></div>
             <div className="grid grid-cols-4 text-center mb-1">
                 <div className="text-lg  text-start col-start-1 col-end-4 leading-none">{itemName}</div>
-                <div className="text-lg text-end text-white leading-none">Nv. {itemLevel}</div>
+                <div className="text-lg text-end text-white leading-none">Nivel {itemLevel}</div>
             </div>
             <div className="grid grid-cols-6">
                 <TriangleElementsComponent/>
-                <div className={cardDynamicStyles.textColor}>{itemSubType}</div>
+                <div className={cardDynamicStyles.textColor}>{getWeaponName(itemSubType)}</div>
             </div>
 
-            
             <div className="grid grid-cols-4 text-center">
-                <div className="bg-alpha-step-1 font-bold">{itemDPS} <span className="text-[12px]" >DPS</span></div>
+                <div className="bg-alpha-step-1 font-bold">{itemDPS}<span className="text-[12px]" > DPS</span></div>
             </div>
             <div className="h-2"></div>
         </div>
         
         <div className="h-2"></div>
 
-        <div className="grid grid-cols-5 gap-1">
-            <div className="bg-alpha-step-1 rounded-lg text-center py-5"><span className="text-[10px]">Daño:</span> 4,612</div>
-            <div className="bg-alpha-step-1 rounded-lg text-center py-5"><span className="text-[10px]">Presicion:</span> 79%</div>
-            <div className="bg-alpha-step-1 rounded-lg text-center py-5"><span className="text-[10px]">Vel.Recarga:</span> 2.0s</div>
-            <div className="bg-alpha-step-1 rounded-lg text-center py-5"><span className="text-[10px]">Cad.Fuego:</span> 0.8/s</div>
-            <div className="bg-alpha-step-1 rounded-lg text-center py-5"><span className="text-[10px]">Tam.Cargador:</span> 8</div>
-        </div>
+        {
+            itemType === 'weapon'
+                ? <div className="grid grid-cols-5 gap-1">
+                    <div className="bg-alpha-step-1 rounded-lg text-center py-5 grid grid-cols-1">
+                        <span className="text-[10px]">Daño:</span> 
+                        <span>{weaponProperties?.damage}</span>
+                    </div>
+                    <div className="bg-alpha-step-1 rounded-lg text-center py-5 grid grid-cols-1">
+                        <span className="text-[10px]">Presicion:</span>
+                        <span>{weaponProperties?.accuracy}%</span>
+                        </div>
+                    <div className="bg-alpha-step-1 rounded-lg text-center py-5 grid grid-cols-1">
+                        <span className="text-[10px]">Vel.Recarga:</span>
+                        <span>{weaponProperties?.reloadSpeed}s</span>
+                    </div>
+                    <div className="bg-alpha-step-1 rounded-lg text-center py-5 grid grid-cols-1">
+                        <span className="text-[10px]">Cad.Fuego:</span>
+                        <span>{weaponProperties?.fireRate}/s</span>
+                    </div>
+                    <div className="bg-alpha-step-1 rounded-lg text-center py-5 grid grid-cols-1">
+                        <span className="text-[10px]">Tam.Cargador:</span>
+                        <span>{weaponProperties?.magazineSize}</span>
+                    </div>
+                </div>
+                : null
+        }
 
         <div className="h-2"></div>
         
         {
-            hasElementalEffect ? <div className="grid grid-cols-3 gap-1 text-center border-t-2 border-b-2 border-shock">
-                <div className="text-base text-shock">E1 E2</div>
-                <div className="text-base text-shock">18.225 DMG/s</div>
-                <div className="text-base text-shock">9% Chance</div>
-            </div> : null
+            // if the weapon has 2 elemental effects , cycle an array with the values.
+            hasElementalEffect 
+                ? <ElementalDamagesComponent elementalEffect={elementalEffects[0]} />
+                : null
         }
 
         <div className="h-3"></div>
@@ -196,6 +307,14 @@ const  ItemCard = ({
             <div className="mb-3">
                 <div className="text-sm text-gray-400"> <span className="text-rare">Maliwan</span> - Can switch between <span className="text-shock">Shock</span> and Cryo Elements</div>
             </div>
+        </div>
+
+        <div className="border-t-2 border-t-common">
+            <span>{descriptionText}</span>
+        </div>
+
+        <div>
+            <span>{manufacturer}</span>
         </div>
     </div>
     )
