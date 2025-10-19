@@ -8,6 +8,7 @@
   --rare: #00a8ff;
   --epic: #9b59b6;
   --legendary: #d4af37;
+  --fire: #f23636;
   --shock: #366af2;
   --remark-text: #508daa;
   --card-background:#192946;
@@ -29,6 +30,7 @@
   --color-legendary: var(--legendary);
   --color-remark-text: var(--remark-text);
   --color-shock: var(--shock);
+  --color-fire: var(--fire);
   --color-card-background: var(--card-background);
   --color-yellow: var(--yellow);
   --color-alpha-step-1: var(--alpha-step-1);

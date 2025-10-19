@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Image from 'next/image'
 
 interface IElementalEffects {
@@ -96,12 +96,12 @@ export default function Page() {
             }}
             attributes={[
                 {
-                    icon: 'https://example.com/icon1.png',
+                    icon: '/icons/critical_shot_icon.png',
                     name: 'Escudo de absorcion oficial de Hyperion',
                     description: ''
                 },
                 {
-                    icon: 'https://example.com/icon1.png',
+                    icon: '/icons/legendary_effect_icon.png',
                     name: 'Maliwan:',
                     description: 'puede cambiar entre elementos glacial y eléctricos'
                 },
@@ -134,14 +134,69 @@ const  ItemCard = ({
  }: IItemCardProps) =>{
     
     const ElementalDamagesComponent = ({
-        elementalEffect
+        elementalEffects
     }:{ 
-        elementalEffect: IElementalEffects 
+        elementalEffects: IElementalEffects[]
     }) =>{
-        return <div className="grid grid-cols-3 gap-1 text-center border-t-2 border-b-2 border-shock">
-                    <div className="text-base text-shock">{elementalEffect.type}</div>
-                    <div className="text-base text-shock">{elementalEffect.damagePerSecond} DMG/s</div>
-                    <div className="text-base text-shock">{elementalEffect.chanceToApply}% Chance</div>
+        const [currentElementData, setCurrentElementData] = useState(elementalEffects[0]);
+        const [currentElementSyles, setCurrentElementStyles] = useState({
+            containerClassName: 'flex justify-evenly gap-1 text-center border-t-2 border-b-2 border-fire',
+            textClassName: 'text-base text-fire'
+        });
+
+        useEffect(()=>{
+            let effectIndex = 0;
+            const interval = setInterval(()=>{
+                effectIndex = (effectIndex + 1) % elementalEffects.length;
+                setCurrentElementData(elementalEffects[effectIndex]);    
+                
+                const elementStyles = {
+                    containerClassName: 'flex justify-evenly gap-1 text-center border-t-2 border-b-2 border-fire',
+                    textClassName: 'text-base text-fire'
+                };
+
+                switch(elementalEffects[effectIndex].type){
+                    case 'fire':
+                        elementStyles.containerClassName = 'flex justify-evenly gap-1 text-center border-t-2 border-b-2 border-fire';
+                        elementStyles.textClassName = 'text-base text-fire';
+                        break;
+                    case 'shock':
+                        elementStyles.containerClassName = 'flex justify-evenly gap-1 text-center border-t-2 border-b-2 border-shock';
+                        elementStyles.textClassName = 'text-base text-shock';
+                        break;
+                    case 'corrosive':
+                        elementStyles.containerClassName = 'flex justify-evenly gap-1 text-center border-t-2 border-b-2 border-corrosive';
+                        elementStyles.textClassName = 'text-base text-corrosive';
+                        break;
+                    case 'cryo':
+                        elementStyles.containerClassName = 'flex justify-evenly gap-1 text-center border-t-2 border-b-2 border-cryo';
+                        elementStyles.textClassName = 'text-base text-cryo';
+                        break;
+                    case 'radiation':
+                        elementStyles.containerClassName = 'flex justify-evenly gap-1 text-center border-t-2 border-b-2 border-radiation';
+                        elementStyles.textClassName = 'text-base text-radiation';
+                        break;
+                }
+                
+                setCurrentElementStyles(elementStyles);
+            }, 1000);
+
+
+            return () => clearInterval(interval);
+        }, [elementalEffects]);
+
+        return <div className={currentElementSyles.containerClassName}>
+                    <div className="grid place-items-center w-[20px] h-[20px] min-w-[20px]">
+                        <Image
+                            alt={""}
+                            width={20}
+                            height={20}
+                            src={`/icons/${currentElementData.type}_element_icon.png`}
+                        />
+                    </div>
+                    {/* <div className="text-base text-shock">{currentData.type}</div> */}
+                    <div className={currentElementSyles.textClassName}>{currentElementData.damagePerSecond} DMG/s</div>
+                    <div className={currentElementSyles.textClassName}>{currentElementData.chanceToApply}% Chance</div>
                 </div> 
     }
 
@@ -161,7 +216,7 @@ const  ItemCard = ({
                                     alt={value.name}
                                     width={30}
                                     height={30}
-                                    src="/icons/legendary_effect_icon.png"
+                                    src={value.icon}
                                 />
                             </div>
                             <div className="text-sm">
@@ -331,7 +386,7 @@ const  ItemCard = ({
         {
             // if the weapon has 2 elemental effects , cycle an array with the values.
             hasElementalEffect 
-                ? <ElementalDamagesComponent elementalEffect={elementalEffects[0]} />
+                ? <ElementalDamagesComponent elementalEffects={elementalEffects} />
                 : null
         }
 
