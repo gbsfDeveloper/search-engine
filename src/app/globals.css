@@ -11,6 +11,7 @@
   --shock: #366af2;
   --remark-text: #508daa;
   --card-background:#192946;
+  --attributes-icon-bg:#113343;
   --yellow:rgb(255, 232, 36);
   --alpha-step-1: rgba(255, 255, 255, 0.1);
   --alpha-yellow: rgba(255, 232, 36, 0.1);
@@ -31,6 +32,7 @@
   --color-card-background: var(--card-background);
   --color-yellow: var(--yellow);
   --color-alpha-step-1: var(--alpha-step-1);
+  --color-attributes-icon-bg: var(--attributes-icon-bg);
 }
 
 @media (prefers-color-scheme: dark) {

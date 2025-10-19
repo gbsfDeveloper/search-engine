@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from "react";
+import Image from 'next/image'
 
 interface IElementalEffects {
     type: 'fire' | 'shock' | 'corrosive' | 'cryo' | 'radiation';
@@ -45,15 +46,26 @@ interface IItemCardProps {
   attributes?: IItemAttributes[];
   manufacturer?: string;
   descriptionText?: string;
+  language: string;
 }
 
-const getWeaponName = (itemSubType : TWeaponSubtypes) =>{
+const getWeaponName = (itemSubType : TWeaponSubtypes, language: string) =>{
+    let weaponName = '';
+    switch(language){
+        case 'spanish':
+            weaponName = WEAPON_SUBTYPES[itemSubType].spanish
+            break;
+        default:
+            weaponName = WEAPON_SUBTYPES[itemSubType].english
+            break;
+    }
+
     return WEAPON_SUBTYPES[itemSubType] ? WEAPON_SUBTYPES[itemSubType].spanish : itemSubType;
 }
 
 export default function Page() {
     const [language, setLanguage] = useState('spanish');
-
+    
     return (
         <ItemCard 
             itemName="Vestigial La venganza de Katagawa"
@@ -85,18 +97,19 @@ export default function Page() {
             attributes={[
                 {
                     icon: 'https://example.com/icon1.png',
-                    name: 'Nubarrón',
+                    name: 'Escudo de absorcion oficial de Hyperion',
                     description: ''
                 },
                 {
                     icon: 'https://example.com/icon1.png',
                     name: 'Maliwan:',
-                    description: 'puede cambiar entre elementos incendiarios y eléctricos'
+                    description: 'puede cambiar entre elementos glacial y eléctricos'
                 },
 
             ]}
             descriptionText="Puedes lastimar a alguien, ¡y ese es mi p#to trabajo!"
             manufacturer="Maliwan"
+            language={language}
         >
             
         </ItemCard>
@@ -115,7 +128,9 @@ const  ItemCard = ({
     elementalEffects = [],
     weaponProperties,
     manufacturer,
-    descriptionText
+    descriptionText,
+    language = 'spanish',
+    attributes = []
  }: IItemCardProps) =>{
     
     const ElementalDamagesComponent = ({
@@ -128,6 +143,35 @@ const  ItemCard = ({
                     <div className="text-base text-shock">{elementalEffect.damagePerSecond} DMG/s</div>
                     <div className="text-base text-shock">{elementalEffect.chanceToApply}% Chance</div>
                 </div> 
+    }
+
+    const AttributesComponent = ({
+        attributes
+    }:{ 
+        attributes: IItemAttributes[]
+    }) =>{
+
+        return(
+            <div>
+                {
+                    attributes.map((value, index)=>(
+                        <div key={index} className="flex gap-1 items-center">
+                            <div className="grid place-items-center bg-attributes-icon-bg w-[50px] h-[50px] min-w-[50px]">
+                                <Image
+                                    alt={value.name}
+                                    width={30}
+                                    height={30}
+                                    src="/icons/legendary_effect_icon.png"
+                                />
+                            </div>
+                            <div className="text-sm">
+                                <span>{value.name}:{value.description}</span>
+                            </div>
+                        </div>
+                    ))
+                }
+            </div>
+        )
     }
 
     const TriangleElementsComponent = () =>{
@@ -197,6 +241,8 @@ const  ItemCard = ({
         )
     }
 
+
+
     const cardDynamicStyles = {
         textColor: 'text-common col-span-5',
         borderTop: 'border-t-common',
@@ -237,12 +283,12 @@ const  ItemCard = ({
         <div className={firstSectionContainerStyles}>
             <div className="h-2"></div>
             <div className="grid grid-cols-4 text-center mb-1">
-                <div className="text-lg  text-start col-start-1 col-end-4 leading-none">{itemName}</div>
+                <div className="text-lg text-start col-start-1 col-end-4 leading-none">{itemName}</div>
                 <div className="text-lg text-end text-white leading-none">Nivel {itemLevel}</div>
             </div>
             <div className="grid grid-cols-6">
                 <TriangleElementsComponent/>
-                <div className={cardDynamicStyles.textColor}>{getWeaponName(itemSubType)}</div>
+                <div className={cardDynamicStyles.textColor}>{getWeaponName(itemSubType, language)}</div>
             </div>
 
             <div className="grid grid-cols-4 text-center">
@@ -291,23 +337,7 @@ const  ItemCard = ({
 
         <div className="h-3"></div>
 
-        <div>
-            <div className="mb-3">
-                <div className="text-sm text-yellow">Force Blunt</div>
-            </div>
-
-            <div className="mb-3">
-                <div className="text-sm text-gray-400"><span className="text-rare">Jakobs-Licensed Accessory</span> - <span className="text-rare">Critical Hits</span> will Ricochet Projectiles to nearby <span className="text-rare">enemies</span></div>
-            </div>
-            
-            <div className="mb-3">
-                <div className="text-sm text-gray-400"><span className="text-rare">Hyperion-Licensed Grip</span> - <span className="text-rare">Accuracy</span> increases with continuous fire</div>
-            </div>
-            
-            <div className="mb-3">
-                <div className="text-sm text-gray-400"> <span className="text-rare">Maliwan</span> - Can switch between <span className="text-shock">Shock</span> and Cryo Elements</div>
-            </div>
-        </div>
+        <AttributesComponent attributes={attributes}/>
 
         <div className="border-t-2 border-t-common">
             <span>{descriptionText}</span>
