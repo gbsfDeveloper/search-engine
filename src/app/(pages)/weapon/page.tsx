@@ -6,6 +6,7 @@ interface IElementalEffects {
     type: 'fire' | 'shock' | 'corrosive' | 'cryo' | 'radiation';
     damagePerSecond: number;
     chanceToApply: number;
+    cryoEffectiveness?: number;
 }
 
 interface IWeaponProperties {
@@ -67,113 +68,94 @@ export default function Page() {
     const [language, setLanguage] = useState('spanish');
     
     return (
-        // <ItemCard 
-        //     itemName="Vestigial La venganza de Katagawa"
-        //     itemLevel={49}
-        //     itemRarity="legendary"
-        //     itemType="weapon"
-        //     itemSubType="sniper"
-        //     itemDPS={1800}
-        //     hasElementalEffect={true}
-        //     elementalEffects={[
-        //         { 
-        //             type: 'fire',
-        //             damagePerSecond: 767,
-        //             chanceToApply: 27
-        //         },
-        //         { 
-        //             type: 'shock',
-        //             damagePerSecond: 1458,
-        //             chanceToApply: 27
-        //         }
-        //     ]}
-        //     weaponProperties={{
-        //         damage: 4612,
-        //         accuracy: 79,
-        //         reloadSpeed: '2.0',
-        //         fireRate: '0.8',
-        //         magazineSize: 8
-        //     }}
-        //     attributes={[
-        //         {
-        //             icon: '/icons/critical_shot_icon.png',
-        //             name: 'A fuego lento:',
-        //             description: 'los impactos criticos aplican efectos de estado en lugar de aumentar el daño'
-        //         },
-        //         {
-        //             icon: '/icons/legendary_effect_icon.png',
-        //             name: 'Maliwan:',
-        //             description: 'puede cambiar entre elementos glacial y eléctricos'
-        //         },
-        //         {
-        //             icon: '/icons/critical_shot_icon.png',
-        //             name: 'Maliwan:',
-        //             description: 'puede cambiar entre elementos glacial y eléctricos'
-        //         },
+        <div className="flex flex-row gap-5 p-5 bg-background">
+            <ItemCard 
+                itemName="Vestigial La venganza de Katagawa"
+                itemLevel={49}
+                itemRarity="legendary"
+                itemType="weapon"
+                itemSubType="sniper"
+                itemDPS={1800}
+                hasElementalEffect={true}
+                elementalEffects={[
+                    { 
+                        type: 'fire',
+                        damagePerSecond: 767,
+                        chanceToApply: 27
+                    },
+                    { 
+                        type: 'shock',
+                        damagePerSecond: 1458,
+                        chanceToApply: 27
+                    }
+                ]}
+                weaponProperties={{
+                    damage: '4612',
+                    accuracy: 79,
+                    reloadSpeed: '2.0',
+                    fireRate: '0.8',
+                    magazineSize: 8
+                }}
+                attributes={[
+                    {
+                        icon: '/icons/critical_shot_icon.png',
+                        name: 'A fuego lento:',
+                        description: 'los impactos criticos aplican efectos de estado en lugar de aumentar el daño'
+                    },
+                    {
+                        icon: '/icons/legendary_effect_icon.png',
+                        name: 'Maliwan:',
+                        description: 'puede cambiar entre elementos glacial y eléctricos'
+                    },
+                    {
+                        icon: '/icons/critical_shot_icon.png',
+                        name: 'Maliwan:',
+                        description: 'puede cambiar entre elementos glacial y eléctricos'
+                    },
 
-        //     ]}
-        //     descriptionText="Puedes lastimar a alguien, ¡y ese es mi p#to trabajo!"
-        //     manufacturer="Maliwan"
-        //     language={language}
-        // >
-            
-        // </ItemCard>
-        <ItemCard 
-            itemName="Synchrotron Sesquiquadrate Vertex"
-            itemLevel={31}
-            itemRarity="epic"
-            itemType="weapon"
-            itemSubType="shotgun"
-            itemDPS={719}
-            hasElementalEffect={true}
-            elementalEffects={[
-                { 
-                    type: 'radiation',
-                    damagePerSecond: 767,
-                    chanceToApply: 27
-                },
-                { 
-                    type: 'cryo',
-                    damagePerSecond: 1458,
-                    chanceToApply: 27
-                }
-            ]}
-            weaponProperties={{
-                damage: '437 x 2',
-                accuracy: 79,
-                reloadSpeed: '2.7',
-                fireRate: '1.5',
-                magazineSize: 13
-            }}
-            attributes={[
-                {
-                    icon: '/icons/critical_shot_icon.png',
-                    name: 'Jakobs-licensed Accesory',
-                    description: 'Critical Hits will Ricochet Projectiles to nearby enemies'
-                },
-                {
-                    icon: '/icons/accuracy_increased_on_continuos_fire_icon.png',
-                    name: 'Hyperion-Licensed Grip',
-                    description: 'Accuracy increases with continuous fire'
-                },
-                {
-                    icon: '/icons/charges_before_full_aurofire_icon.png',
-                    name: 'Ripper-licensed Magazine:',
-                    description: 'This Gun charges before Full Auto firing'
-                },
-                {
-                    icon: '/icons/switch_between_elements_icon.png',
-                    name: 'Maliwan',
-                    description: 'Can switch between Radiation and Cryo Elements'
-                },
-
-            ]}
-            // descriptionText="Puedes lastimar a alguien, ¡y ese es mi p#to trabajo!"
-            manufacturer="Maliwan"
-            language={language}
-        >
-            
-        </ItemCard>
+                ]}
+                descriptionText="Puedes lastimar a alguien, ¡y ese es mi p#to trabajo!"
+                manufacturer="Maliwan"
+                language={language}
+            >
+                
+            </ItemCard>
+            <ItemCard 
+                itemName="Crepuscular Ephemeris"
+                itemLevel={49}
+                itemRarity="uncommon"
+                itemType="weapon"
+                itemSubType="smg"
+                itemDPS={2115}
+                hasElementalEffect={true}
+                elementalEffects={[
+                    { 
+                        type: 'cryo',
+                        damagePerSecond: 104,
+                        chanceToApply: 0,
+                        cryoEffectiveness: 104
+                    }
+                ]}
+                weaponProperties={{
+                    damage: '415',
+                    accuracy: 82,
+                    reloadSpeed: '2.5',
+                    fireRate: '7.3',
+                    magazineSize: 43
+                }}
+                attributes={[
+                    {
+                        icon: '/icons/energy_discharge_icon.png',
+                        name: '[Disparo alternativo]',
+                        description: 'Descarga de energia: Carga y dispara un rayo que inflige 6119 de daño'
+                    },
+                ]}
+                manufacturer="Maliwan"
+                language={language}
+            >
+                
+            </ItemCard>
+        </div>
     );
 }
 
@@ -230,7 +212,7 @@ const  ItemCard = ({
                         elementStyles.textClassName = 'text-base text-corrosive';
                         break;
                     case 'cryo':
-                        elementStyles.containerClassName = 'flex justify-evenly gap-1 text-center border-t-2 border-b-2 border-cryo';
+                        elementStyles.containerClassName = 'flex justify-center gap-1 text-center border-t-2 border-b-2 border-cryo';
                         elementStyles.textClassName = 'text-base text-cryo';
                         break;
                     case 'radiation':
@@ -255,9 +237,9 @@ const  ItemCard = ({
                             src={`/icons/${currentElementData.type}_element_icon.png`}
                         />
                     </div>
-                    {/* <div className="text-base text-shock">{currentData.type}</div> */}
-                    <div className={currentElementSyles.textClassName}>{currentElementData.damagePerSecond} DMG/s</div>
-                    <div className={currentElementSyles.textClassName}>{currentElementData.chanceToApply}% Chance</div>
+                    {currentElementData.type === "cryo" && <div className={currentElementSyles.textClassName}>Eficacia glacial: {currentElementData.cryoEffectiveness}%</div>}
+                    {currentElementData.type !== "cryo" && <div className={currentElementSyles.textClassName}>{currentElementData.damagePerSecond} de daño/s</div>}
+                    {currentElementData.type !== "cryo" && <div className={currentElementSyles.textClassName}>{currentElementData.chanceToApply}% de probabilidad</div>}
                 </div> 
     }
 

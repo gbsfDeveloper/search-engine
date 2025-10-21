@@ -12,6 +12,8 @@
   --cryo: #88eddc;
   --fire: #f23636;
   --shock: #366af2;
+  --copper-text: #a76e33;
+  --ming-text: #30637d;
   --remark-text: #508daa;
   --card-background:#192946;
   --attributes-icon-bg:#113343;
@@ -35,6 +37,8 @@
   --color-fire: var(--fire);
   --color-radiation: var(--radiation);
   --color-cryo: var(--cryo);
+  --color-copper: var(--copper-text);
+  --color-ming: var(--ming-text);
   --color-card-background: var(--card-background);
   --color-yellow: var(--yellow);
   --color-alpha-step-1: var(--alpha-step-1);
