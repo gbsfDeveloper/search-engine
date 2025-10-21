@@ -9,7 +9,7 @@ interface IElementalEffects {
 }
 
 interface IWeaponProperties {
-    damage: number;
+    damage: string;
     accuracy: number;
     reloadSpeed: string;
     fireRate: string;
@@ -67,47 +67,108 @@ export default function Page() {
     const [language, setLanguage] = useState('spanish');
     
     return (
+        // <ItemCard 
+        //     itemName="Vestigial La venganza de Katagawa"
+        //     itemLevel={49}
+        //     itemRarity="legendary"
+        //     itemType="weapon"
+        //     itemSubType="sniper"
+        //     itemDPS={1800}
+        //     hasElementalEffect={true}
+        //     elementalEffects={[
+        //         { 
+        //             type: 'fire',
+        //             damagePerSecond: 767,
+        //             chanceToApply: 27
+        //         },
+        //         { 
+        //             type: 'shock',
+        //             damagePerSecond: 1458,
+        //             chanceToApply: 27
+        //         }
+        //     ]}
+        //     weaponProperties={{
+        //         damage: 4612,
+        //         accuracy: 79,
+        //         reloadSpeed: '2.0',
+        //         fireRate: '0.8',
+        //         magazineSize: 8
+        //     }}
+        //     attributes={[
+        //         {
+        //             icon: '/icons/critical_shot_icon.png',
+        //             name: 'A fuego lento:',
+        //             description: 'los impactos criticos aplican efectos de estado en lugar de aumentar el daño'
+        //         },
+        //         {
+        //             icon: '/icons/legendary_effect_icon.png',
+        //             name: 'Maliwan:',
+        //             description: 'puede cambiar entre elementos glacial y eléctricos'
+        //         },
+        //         {
+        //             icon: '/icons/critical_shot_icon.png',
+        //             name: 'Maliwan:',
+        //             description: 'puede cambiar entre elementos glacial y eléctricos'
+        //         },
+
+        //     ]}
+        //     descriptionText="Puedes lastimar a alguien, ¡y ese es mi p#to trabajo!"
+        //     manufacturer="Maliwan"
+        //     language={language}
+        // >
+            
+        // </ItemCard>
         <ItemCard 
-            itemName="Vestigial La venganza de Katagawa"
-            itemLevel={49}
-            itemRarity="legendary"
+            itemName="Synchrotron Sesquiquadrate Vertex"
+            itemLevel={31}
+            itemRarity="epic"
             itemType="weapon"
-            itemSubType="sniper"
-            itemDPS={1800}
+            itemSubType="shotgun"
+            itemDPS={719}
             hasElementalEffect={true}
             elementalEffects={[
                 { 
-                    type: 'fire',
+                    type: 'radiation',
                     damagePerSecond: 767,
                     chanceToApply: 27
                 },
                 { 
-                    type: 'shock',
+                    type: 'cryo',
                     damagePerSecond: 1458,
                     chanceToApply: 27
                 }
             ]}
             weaponProperties={{
-                damage: 4612,
+                damage: '437 x 2',
                 accuracy: 79,
-                reloadSpeed: '2.0',
-                fireRate: '0.8',
-                magazineSize: 8
+                reloadSpeed: '2.7',
+                fireRate: '1.5',
+                magazineSize: 13
             }}
             attributes={[
                 {
                     icon: '/icons/critical_shot_icon.png',
-                    name: 'Escudo de absorcion oficial de Hyperion',
-                    description: ''
+                    name: 'Jakobs-licensed Accesory',
+                    description: 'Critical Hits will Ricochet Projectiles to nearby enemies'
                 },
                 {
-                    icon: '/icons/legendary_effect_icon.png',
-                    name: 'Maliwan:',
-                    description: 'puede cambiar entre elementos glacial y eléctricos'
+                    icon: '/icons/accuracy_increased_on_continuos_fire_icon.png',
+                    name: 'Hyperion-Licensed Grip',
+                    description: 'Accuracy increases with continuous fire'
+                },
+                {
+                    icon: '/icons/charges_before_full_aurofire_icon.png',
+                    name: 'Ripper-licensed Magazine:',
+                    description: 'This Gun charges before Full Auto firing'
+                },
+                {
+                    icon: '/icons/switch_between_elements_icon.png',
+                    name: 'Maliwan',
+                    description: 'Can switch between Radiation and Cryo Elements'
                 },
 
             ]}
-            descriptionText="Puedes lastimar a alguien, ¡y ese es mi p#to trabajo!"
+            // descriptionText="Puedes lastimar a alguien, ¡y ese es mi p#to trabajo!"
             manufacturer="Maliwan"
             language={language}
         >
@@ -179,7 +240,7 @@ const  ItemCard = ({
                 }
                 
                 setCurrentElementStyles(elementStyles);
-            }, 1000);
+            }, 1500);
 
 
             return () => clearInterval(interval);
@@ -394,9 +455,12 @@ const  ItemCard = ({
 
         <AttributesComponent attributes={attributes}/>
 
-        <div className="border-t-2 border-t-common">
-            <span>{descriptionText}</span>
-        </div>
+        {
+            descriptionText &&
+            <div className="border-t-2 border-t-common">
+                <span>{descriptionText}</span>
+            </div>
+        }
 
         <div>
             <span>{manufacturer}</span>

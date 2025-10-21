@@ -8,6 +8,8 @@
   --rare: #00a8ff;
   --epic: #9b59b6;
   --legendary: #d4af37;
+  --radiation: #effd08;
+  --cryo: #88eddc;
   --fire: #f23636;
   --shock: #366af2;
   --remark-text: #508daa;
@@ -31,6 +33,8 @@
   --color-remark-text: var(--remark-text);
   --color-shock: var(--shock);
   --color-fire: var(--fire);
+  --color-radiation: var(--radiation);
+  --color-cryo: var(--cryo);
   --color-card-background: var(--card-background);
   --color-yellow: var(--yellow);
   --color-alpha-step-1: var(--alpha-step-1);
