@@ -8,10 +8,12 @@
   --rare: #00a8ff;
   --epic: #9b59b6;
   --legendary: #d4af37;
+  --legendary-description: #994e60;
   --radiation: #effd08;
   --cryo: #88eddc;
   --fire: #f23636;
   --shock: #366af2;
+  --corrosive: #6ec134;
   --copper-text: #a76e33;
   --ming-text: #30637d;
   --remark-text: #508daa;
@@ -32,8 +34,10 @@
   --color-rare: var(--rare);
   --color-epic: var(--epic);
   --color-legendary: var(--legendary);
+  --color-legendary-description: var(--legendary-description);
   --color-remark-text: var(--remark-text);
   --color-shock: var(--shock);
+  --color-corrosive: var(--corrosive);
   --color-fire: var(--fire);
   --color-radiation: var(--radiation);
   --color-cryo: var(--cryo);
