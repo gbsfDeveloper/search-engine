@@ -70,51 +70,56 @@ export default function Page() {
     return (
         <div className="flex flex-row gap-5 p-5 bg-background">
             <ItemCard 
-                itemName="Vestigial La venganza de Katagawa"
-                itemLevel={49}
+                itemName="Sychrotron Anaretic El ascenso de Asher"
+                itemLevel={50}
                 itemRarity="legendary"
                 itemType="weapon"
                 itemSubType="sniper"
-                itemDPS={1800}
+                itemDPS={1098}
                 hasElementalEffect={true}
                 elementalEffects={[
                     { 
-                        type: 'fire',
-                        damagePerSecond: 767,
-                        chanceToApply: 27
+                        type: 'corrosive',
+                        damagePerSecond: 1140,
+                        chanceToApply: 0
                     },
                     { 
                         type: 'shock',
                         damagePerSecond: 1458,
-                        chanceToApply: 27
+                        chanceToApply: 10
                     }
                 ]}
                 weaponProperties={{
-                    damage: '4612',
-                    accuracy: 79,
-                    reloadSpeed: '2.0',
+                    damage: '1573',
+                    accuracy: 88,
+                    reloadSpeed: '1.9',
                     fireRate: '0.8',
-                    magazineSize: 8
+                    magazineSize: 15
                 }}
                 attributes={[
                     {
-                        icon: '/icons/critical_shot_icon.png',
+                        icon: '/icons/legendary_effect_icon.png',
                         name: 'A fuego lento:',
                         description: 'los impactos criticos aplican efectos de estado en lugar de aumentar el daño'
                     },
                     {
-                        icon: '/icons/legendary_effect_icon.png',
-                        name: 'Maliwan:',
-                        description: 'puede cambiar entre elementos glacial y eléctricos'
+                        icon: '/icons/critical_shot_icon.png',
+                        name: 'Accesorio licenciado de Jakobs:',
+                        description: 'Los impactos criticos hacen rebotar los proyectiles a enemigos cercanos'
                     },
                     {
-                        icon: '/icons/critical_shot_icon.png',
+                        icon: '/icons/charges_before_full_aurofire_icon.png',
+                        name: 'Cargador licenciado de destripador:',
+                        description: 'esta arma se carga antes de disparar en modo automático'
+                    },
+                    {
+                        icon: '/icons/switch_between_elements_icon.png',
                         name: 'Maliwan:',
-                        description: 'puede cambiar entre elementos glacial y eléctricos'
+                        description: 'puede cambiar entre elementos corrosivos y eléctricos'
                     },
 
                 ]}
-                descriptionText="Puedes lastimar a alguien, ¡y ese es mi p#to trabajo!"
+                descriptionText="¿Cómo podíamos tener alguna mínima idea de lo que se avecina?"
                 manufacturer="Maliwan"
                 language={language}
             >
@@ -155,6 +160,39 @@ export default function Page() {
             >
                 
             </ItemCard>
+            <ItemCard 
+                itemName="Ritualized Gallardete"
+                itemLevel={50}
+                itemRarity="legendary"
+                itemType="artillery"
+                // itemSubType=""
+                itemDPS={2115}
+                hasElementalEffect={true}
+                elementalEffects={[
+                    { 
+                        type: 'cryo',
+                        damagePerSecond: 104,
+                        chanceToApply: 0,
+                        cryoEffectiveness: 104
+                    }
+                ]}
+                weaponProperties={{
+                    damage: '415',
+                    accuracy: 82,
+                    reloadSpeed: '2.5',
+                    fireRate: '7.3',
+                    magazineSize: 43
+                }}
+                attributes={[
+                    {
+                        icon: '/icons/energy_discharge_icon.png',
+                        name: '[Disparo alternativo]',
+                        description: 'Descarga de energia: Carga y dispara un rayo que inflige 6119 de daño'
+                    },
+                ]}
+                manufacturer="Maliwan"
+                language={language}
+            />
         </div>
     );
 }
@@ -400,24 +438,64 @@ const  ItemCard = ({
         {
             itemType === 'weapon'
                 ? <div className="grid grid-cols-5 gap-1">
-                    <div className="bg-alpha-step-1 rounded-lg text-center py-5 grid grid-cols-1">
-                        <span className="text-[10px]">Daño:</span> 
+                    <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
+                        <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
+                            <Image
+                                alt={'Daño'}
+                                width={30}
+                                height={30}
+                                src={'/icons/damage_icon.png'}
+                            />
+                        </div>
+                        <div className="h-1"></div>
                         <span>{weaponProperties?.damage}</span>
                     </div>
-                    <div className="bg-alpha-step-1 rounded-lg text-center py-5 grid grid-cols-1">
-                        <span className="text-[10px]">Presicion:</span>
-                        <span>{weaponProperties?.accuracy}%</span>
+                    <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
+                        <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
+                            <Image
+                                alt={'Presicion'}
+                                width={30}
+                                height={30}
+                                src={'/icons/accuracy_icon.png'}
+                            />
                         </div>
-                    <div className="bg-alpha-step-1 rounded-lg text-center py-5 grid grid-cols-1">
-                        <span className="text-[10px]">Vel.Recarga:</span>
+                        <div className="h-1"></div>
+                        <span>{weaponProperties?.accuracy}%</span>
+                    </div>
+                    <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
+                        <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
+                            <Image
+                                alt={'Vel.Recarga'}
+                                width={30}
+                                height={30}
+                                src={'/icons/reload_speed_icon.png'}
+                            />
+                        </div>
+                        <div className="h-1"></div>
                         <span>{weaponProperties?.reloadSpeed}s</span>
                     </div>
-                    <div className="bg-alpha-step-1 rounded-lg text-center py-5 grid grid-cols-1">
-                        <span className="text-[10px]">Cad.Fuego:</span>
+                    <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
+                        <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
+                            <Image
+                                alt={'Cad.Fuego'}
+                                width={30}
+                                height={30}
+                                src={'/icons/fire_cadence_icon.png'}
+                            />
+                        </div>
+                        <div className="h-1"></div>
                         <span>{weaponProperties?.fireRate}/s</span>
                     </div>
-                    <div className="bg-alpha-step-1 rounded-lg text-center py-5 grid grid-cols-1">
-                        <span className="text-[10px]">Tam.Cargador:</span>
+                    <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
+                        <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
+                            <Image
+                                alt={'Tam.Cargador'}
+                                width={30}
+                                height={30}
+                                src={'/icons/magazine_size_icon.png'}
+                            />
+                        </div>
+                        <div className="h-1"></div>
                         <span>{weaponProperties?.magazineSize}</span>
                     </div>
                 </div>
@@ -436,16 +514,19 @@ const  ItemCard = ({
         <div className="h-3"></div>
 
         <AttributesComponent attributes={attributes}/>
-
+        
+        <div className="h-3"></div>
+       
         {
             descriptionText &&
-            <div className="border-t-2 border-t-common">
-                <span>{descriptionText}</span>
+            <div className="border-t-2 border-t-gray-500 text-center">
+                <div className="h-1"></div>
+                <span className="text-legendary-description">{descriptionText}</span>
             </div>
         }
 
         <div>
-            <span>{manufacturer}</span>
+            <span className="text-yellow-200">{manufacturer}</span>
         </div>
     </div>
     )
