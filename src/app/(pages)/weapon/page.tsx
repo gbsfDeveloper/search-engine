@@ -47,6 +47,7 @@ type TItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 type TItemType = 'weapon' | 'shield' | 'artillery' | 'classMod';
 interface IItemCardProps {
   itemName: string;
+  itemImage?: number;
   itemLevel?: number;
   itemRarity?: TItemRarity;
   itemType?: TItemType;
@@ -113,22 +114,22 @@ export default function Page() {
                 attributes={[
                     {
                         icon: '/icons/legendary_effect_icon.png',
-                        name: 'A fuego lento:',
+                        name: 'A fuego lento',
                         description: 'los impactos criticos aplican efectos de estado en lugar de aumentar el daño'
                     },
                     {
                         icon: '/icons/critical_shot_icon.png',
-                        name: 'Accesorio licenciado de Jakobs:',
+                        name: 'Accesorio licenciado de Jakobs',
                         description: 'Los impactos criticos hacen rebotar los proyectiles a enemigos cercanos'
                     },
                     {
                         icon: '/icons/charges_before_full_aurofire_icon.png',
-                        name: 'Cargador licenciado de destripador:',
+                        name: 'Cargador licenciado de destripador',
                         description: 'esta arma se carga antes de disparar en modo automático'
                     },
                     {
                         icon: '/icons/switch_between_elements_icon.png',
-                        name: 'Maliwan:',
+                        name: 'Maliwan',
                         description: 'puede cambiar entre elementos corrosivos y eléctricos'
                     },
 
@@ -212,6 +213,7 @@ export default function Page() {
 
 const  ItemCard = ({ 
     itemName,
+    itemImage,
     itemLevel,
     itemRarity = 'common',
     itemType = 'weapon',
@@ -390,54 +392,61 @@ const  ItemCard = ({
     }
 
     const cardDynamicStyles = {
-        textColor: 'text-common col-span-5',
+        textColor: 'text-common col-span-5 z-10',
         borderTop: 'border-t-common',
         borderBottom: 'border-b-common',
     } 
 
     switch (itemRarity) {
         case 'uncommon':
-            cardDynamicStyles.textColor = `text-uncommon col-span-5`;
+            cardDynamicStyles.textColor = `text-uncommon col-span-5 z-10`;
             cardDynamicStyles.borderTop = `border-t-uncommon`;
             cardDynamicStyles.borderBottom = `border-b-uncommon`;
             break;
         case 'rare':
-            cardDynamicStyles.textColor = `text-rare col-span-5`;
+            cardDynamicStyles.textColor = `text-rare col-span-5 z-10`;
             cardDynamicStyles.borderTop = `border-t-rare`;
             cardDynamicStyles.borderBottom = `border-b-rare`;
             break;
         case 'epic':
-            cardDynamicStyles.textColor = `text-epic col-span-5`;
+            cardDynamicStyles.textColor = `text-epic col-span-5 z-10`;
             cardDynamicStyles.borderTop = `border-t-epic`;
             cardDynamicStyles.borderBottom = `border-b-epic`;
             break;
         case 'legendary':
-            cardDynamicStyles.textColor = `text-legendary col-span-5`;
+            cardDynamicStyles.textColor = `text-legendary col-span-5 z-10`;
             cardDynamicStyles.borderTop = `border-t-legendary`;
             cardDynamicStyles.borderBottom = `border-b-legendary`;
             break;
         default:
-            cardDynamicStyles.textColor = `text-common col-span-5`;
+            cardDynamicStyles.textColor = `text-common col-span-5 z-10`;
             cardDynamicStyles.borderTop = `border-t-common`;
             cardDynamicStyles.borderBottom = `border-b-common`;
             break;
     }
 
-    const firstSectionContainerStyles = `border-t-2 ${cardDynamicStyles.borderTop} border-b-2 ${cardDynamicStyles.borderBottom}`;
+    const firstSectionContainerStyles = `border-t-2 ${cardDynamicStyles.borderTop} border-b-2 ${cardDynamicStyles.borderBottom} relative`;
 
     return (
     <div className="flex flex-col justify-between bg-card-background rounded-lg w-[420px] p-5 shadow-lg">
         <div className={firstSectionContainerStyles}>
+            <div className="grid place-items-center bg-attributes-icon-bg min-w-[30px] absolute bottom-0 right-0 z-0">
+                <Image
+                    className="w-[11rem] z-0"
+                    alt={'Tiempo de recarga'}
+                    width={30}
+                    height={30}
+                    src={'/icons/sniper_weapon_icon.png'}
+                />
+            </div>
             <div className="h-2"></div>
             <div className="grid grid-cols-4 text-center mb-1">
-                <div className="text-lg text-start col-start-1 col-end-4 leading-none">{itemName}</div>
-                <div className="text-lg text-end text-white leading-none">Nivel {itemLevel}</div>
+                <div className="text-lg text-start col-start-1 col-end-4 leading-none z-10">{itemName}</div>
+                <div className="text-lg text-end text-white leading-none z-10">Nivel {itemLevel}</div>
             </div>
             <div className="grid grid-cols-6">
                 <TriangleElementsComponent/>
-                <div className={cardDynamicStyles.textColor}>{
-                    getItemSubTypeName(itemType, itemSubType, language)
-                }</div>
+                <div className={cardDynamicStyles.textColor}>{getItemSubTypeName(itemType, itemSubType, language)}</div>
             </div>
 
             <div className="grid grid-cols-4 text-center">
