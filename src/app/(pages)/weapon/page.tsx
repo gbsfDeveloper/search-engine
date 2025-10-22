@@ -9,12 +9,13 @@ interface IElementalEffects {
     cryoEffectiveness?: number;
 }
 
-interface IWeaponProperties {
-    damage: string;
-    accuracy: number;
-    reloadSpeed: string;
-    fireRate: string;
-    magazineSize: number;
+interface IItemProperties {
+    damage?: string;
+    accuracy?: number;
+    reloadSpeed?: string;
+    fireRate?: string;
+    magazineSize?: number;
+    recoveryTime?: string;
 }
 
 interface IItemAttributes {
@@ -24,8 +25,6 @@ interface IItemAttributes {
     manufacturer?: string;
 }
 
-type TWeaponSubtypes = keyof typeof WEAPON_SUBTYPES;
-
 const WEAPON_SUBTYPES = {
     'shotgun': {english: 'Shotgun', spanish: 'Escopeta'},
     'sniper': {english: 'Sniper Rifle', spanish: 'Fusil de francotirador'},
@@ -34,15 +33,27 @@ const WEAPON_SUBTYPES = {
     'smg': {english: 'Submachine Gun', spanish: 'Subfusil'},
 }
 
+const ARTILLERY_SUBTYPES = {
+    'torret': {english: 'Torret', spanish: 'Torreta'},
+    'plasmTorret': {english: 'Sniper Rifle', spanish: 'Fusil de francotirador'},
+    'rocketLauncher': {english: 'Assault Rifle', spanish: 'Artilleria de arma pesada'},
+    'granade': {english: 'Assault Rifle', spanish: 'Fusil de asalto'},
+    'plasmGranade': {english: 'Assault Rifle', spanish: 'Fusil de asalto'},
+}
+
+type TWeaponSubtypes = keyof typeof WEAPON_SUBTYPES;
+type TArtillerySubtypes = keyof typeof ARTILLERY_SUBTYPES;
+type TItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+type TItemType = 'weapon' | 'shield' | 'artillery' | 'classMod';
 interface IItemCardProps {
   itemName: string;
   itemLevel?: number;
-  itemRarity?: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-  itemType?: 'weapon' | 'shield' | 'artillery' | 'classMod';
-  itemSubType?: TWeaponSubtypes;
+  itemRarity?: TItemRarity;
+  itemType?: TItemType;
+  itemSubType?: TWeaponSubtypes | TArtillerySubtypes;
   itemDPS?: number;
   hasElementalEffect?: boolean;
-  weaponProperties?: IWeaponProperties
+  itemProperties?: IItemProperties
   elementalEffects?: IElementalEffects[];
   attributes?: IItemAttributes[];
   manufacturer?: string;
@@ -51,17 +62,20 @@ interface IItemCardProps {
 }
 
 const getWeaponName = (itemSubType : TWeaponSubtypes, language: string) =>{
-    let weaponName = '';
-    switch(language){
-        case 'spanish':
-            weaponName = WEAPON_SUBTYPES[itemSubType].spanish
-            break;
-        default:
-            weaponName = WEAPON_SUBTYPES[itemSubType].english
-            break;
-    }
-
     return WEAPON_SUBTYPES[itemSubType] ? WEAPON_SUBTYPES[itemSubType].spanish : itemSubType;
+}
+
+const getArtilleryName = (itemSubType : TArtillerySubtypes, language: string) =>{
+    return ARTILLERY_SUBTYPES[itemSubType] ? ARTILLERY_SUBTYPES[itemSubType].spanish : itemSubType;
+}
+
+const getItemSubTypeName = (itemType: TItemType, itemSubType: TWeaponSubtypes | TArtillerySubtypes, language: string) =>{
+    if(itemType === 'weapon'){
+        return getWeaponName(itemSubType as TWeaponSubtypes, language);
+    } else if(itemType === 'artillery'){
+        return getArtilleryName(itemSubType as TArtillerySubtypes, language);
+    }   
+    return itemSubType;
 }
 
 export default function Page() {
@@ -89,7 +103,7 @@ export default function Page() {
                         chanceToApply: 10
                     }
                 ]}
-                weaponProperties={{
+                itemProperties={{
                     damage: '1573',
                     accuracy: 88,
                     reloadSpeed: '1.9',
@@ -141,7 +155,7 @@ export default function Page() {
                         cryoEffectiveness: 104
                     }
                 ]}
-                weaponProperties={{
+                itemProperties={{
                     damage: '415',
                     accuracy: 82,
                     reloadSpeed: '2.5',
@@ -161,33 +175,31 @@ export default function Page() {
                 
             </ItemCard>
             <ItemCard 
-                itemName="Ritualized Gallardete"
+                itemName="Premature Dead Spread"
                 itemLevel={50}
-                itemRarity="legendary"
+                itemRarity="epic"
                 itemType="artillery"
-                // itemSubType=""
-                itemDPS={2115}
-                hasElementalEffect={true}
-                elementalEffects={[
-                    { 
-                        type: 'cryo',
-                        damagePerSecond: 104,
-                        chanceToApply: 0,
-                        cryoEffectiveness: 104
-                    }
-                ]}
-                weaponProperties={{
-                    damage: '415',
-                    accuracy: 82,
-                    reloadSpeed: '2.5',
-                    fireRate: '7.3',
-                    magazineSize: 43
+                itemSubType="rocketLauncher"
+                itemDPS={24958}
+                hasElementalEffect={false}
+                itemProperties={{
+                    // reloadSpeed: '2.5',
+                    recoveryTime: '37',
+                    damage: '1997 x 2',
+                    accuracy: 61,
+                    fireRate: '6.3',
+                    magazineSize: 32
                 }}
                 attributes={[
                     {
-                        icon: '/icons/energy_discharge_icon.png',
-                        name: '[Disparo alternativo]',
-                        description: 'Descarga de energia: Carga y dispara un rayo que inflige 6119 de daño'
+                        icon: '/icons/magazine_size_upgraded_icon.png',
+                        name: 'Tamaño del cargador',
+                        description: 'el tamaño del cargador aumenta un +25%'
+                    },
+                    {
+                        icon: '/icons/double_shoot_icon.png',
+                        name: 'Doble tiro',
+                        description: 'dispara 2 misiles al mismo tiempo'
                     },
                 ]}
                 manufacturer="Maliwan"
@@ -207,7 +219,7 @@ const  ItemCard = ({
     itemDPS,
     hasElementalEffect = false,
     elementalEffects = [],
-    weaponProperties,
+    itemProperties,
     manufacturer,
     descriptionText,
     language = 'spanish',
@@ -377,13 +389,12 @@ const  ItemCard = ({
         )
     }
 
-
-
     const cardDynamicStyles = {
         textColor: 'text-common col-span-5',
         borderTop: 'border-t-common',
         borderBottom: 'border-b-common',
     } 
+
     switch (itemRarity) {
         case 'uncommon':
             cardDynamicStyles.textColor = `text-uncommon col-span-5`;
@@ -415,7 +426,7 @@ const  ItemCard = ({
     const firstSectionContainerStyles = `border-t-2 ${cardDynamicStyles.borderTop} border-b-2 ${cardDynamicStyles.borderBottom}`;
 
     return (
-        <div className="bg-card-background rounded-lg w-[420px] p-5 shadow-lg">
+    <div className="flex flex-col justify-between bg-card-background rounded-lg w-[420px] p-5 shadow-lg">
         <div className={firstSectionContainerStyles}>
             <div className="h-2"></div>
             <div className="grid grid-cols-4 text-center mb-1">
@@ -424,7 +435,9 @@ const  ItemCard = ({
             </div>
             <div className="grid grid-cols-6">
                 <TriangleElementsComponent/>
-                <div className={cardDynamicStyles.textColor}>{getWeaponName(itemSubType, language)}</div>
+                <div className={cardDynamicStyles.textColor}>{
+                    getItemSubTypeName(itemType, itemSubType, language)
+                }</div>
             </div>
 
             <div className="grid grid-cols-4 text-center">
@@ -435,97 +448,115 @@ const  ItemCard = ({
         
         <div className="h-2"></div>
 
-        {
-            itemType === 'weapon'
-                ? <div className="grid grid-cols-5 gap-1">
-                    <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
-                        <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
-                            <Image
-                                alt={'Daño'}
-                                width={30}
-                                height={30}
-                                src={'/icons/damage_icon.png'}
-                            />
+        <div className="grow">
+            {
+                itemType === 'weapon' || itemType === 'artillery'
+                    ? <div className="grid grid-cols-5 gap-1">
+                        {
+                            itemSubType === "rocketLauncher" && <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
+                                <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
+                                    <Image
+                                        alt={'Tiempo de recarga'}
+                                        width={30}
+                                        height={30}
+                                        src={'/icons/cooldown_icon.png'}
+                                    />
+                                </div>
+                                <div className="h-1"></div>
+                                <span>{itemProperties?.recoveryTime}s</span>
+                            </div>
+                        }
+                        <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
+                            <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
+                                <Image
+                                    alt={'Daño'}
+                                    width={30}
+                                    height={30}
+                                    src={'/icons/damage_icon.png'}
+                                />
+                            </div>
+                            <div className="h-1"></div>
+                            <span>{itemProperties?.damage}</span>
                         </div>
-                        <div className="h-1"></div>
-                        <span>{weaponProperties?.damage}</span>
-                    </div>
-                    <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
-                        <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
-                            <Image
-                                alt={'Presicion'}
-                                width={30}
-                                height={30}
-                                src={'/icons/accuracy_icon.png'}
-                            />
+                        {
+                            itemSubType !== "rocketLauncher" && <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
+                                <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
+                                    <Image
+                                        alt={'Presicion'}
+                                        width={30}
+                                        height={30}
+                                        src={'/icons/accuracy_icon.png'}
+                                    />
+                                </div>
+                                <div className="h-1"></div>
+                                <span>{itemProperties?.accuracy}%</span>
+                            </div>
+                        }
+                        <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
+                            <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
+                                <Image
+                                    alt={'Vel.Recarga'}
+                                    width={30}
+                                    height={30}
+                                    src={'/icons/reload_speed_icon.png'}
+                                />
+                            </div>
+                            <div className="h-1"></div>
+                            <span>{itemProperties?.reloadSpeed}s</span>
                         </div>
-                        <div className="h-1"></div>
-                        <span>{weaponProperties?.accuracy}%</span>
-                    </div>
-                    <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
-                        <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
-                            <Image
-                                alt={'Vel.Recarga'}
-                                width={30}
-                                height={30}
-                                src={'/icons/reload_speed_icon.png'}
-                            />
+                        <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
+                            <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
+                                <Image
+                                    alt={'Cad.Fuego'}
+                                    width={30}
+                                    height={30}
+                                    src={'/icons/fire_cadence_icon.png'}
+                                />
+                            </div>
+                            <div className="h-1"></div>
+                            <span>{itemProperties?.fireRate}/s</span>
                         </div>
-                        <div className="h-1"></div>
-                        <span>{weaponProperties?.reloadSpeed}s</span>
-                    </div>
-                    <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
-                        <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
-                            <Image
-                                alt={'Cad.Fuego'}
-                                width={30}
-                                height={30}
-                                src={'/icons/fire_cadence_icon.png'}
-                            />
+                        <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
+                            <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
+                                <Image
+                                    alt={'Tam.Cargador'}
+                                    width={30}
+                                    height={30}
+                                    src={'/icons/magazine_size_icon.png'}
+                                />
+                            </div>
+                            <div className="h-1"></div>
+                            <span>{itemProperties?.magazineSize}</span>
                         </div>
-                        <div className="h-1"></div>
-                        <span>{weaponProperties?.fireRate}/s</span>
                     </div>
-                    <div className="grid grid-cols-1 place-items-center py-2 text-center bg-alpha-step-1 rounded-lg">
-                        <div className="grid place-items-center bg-attributes-icon-bg w-[30px] h-[30px] min-w-[30px]">
-                            <Image
-                                alt={'Tam.Cargador'}
-                                width={30}
-                                height={30}
-                                src={'/icons/magazine_size_icon.png'}
-                            />
-                        </div>
-                        <div className="h-1"></div>
-                        <span>{weaponProperties?.magazineSize}</span>
-                    </div>
+                    : null
+            }
+
+            <div className="h-2"></div>
+            
+            {
+                hasElementalEffect 
+                    ? <ElementalDamagesComponent elementalEffects={elementalEffects} />
+                    : null
+            }
+
+            <div className="h-3"></div>
+
+            <AttributesComponent attributes={attributes}/>
+            
+            <div className="h-3"></div>
+        
+            {
+                descriptionText &&
+                <div className="border-t-2 border-t-gray-500 text-center">
+                    <div className="h-1"></div>
+                    <span className="text-legendary-description">{descriptionText}</span>
                 </div>
-                : null
-        }
+            }
 
-        <div className="h-2"></div>
-        
-        {
-            // if the weapon has 2 elemental effects , cycle an array with the values.
-            hasElementalEffect 
-                ? <ElementalDamagesComponent elementalEffects={elementalEffects} />
-                : null
-        }
+        </div>
 
-        <div className="h-3"></div>
-
-        <AttributesComponent attributes={attributes}/>
-        
-        <div className="h-3"></div>
-       
-        {
-            descriptionText &&
-            <div className="border-t-2 border-t-gray-500 text-center">
-                <div className="h-1"></div>
-                <span className="text-legendary-description">{descriptionText}</span>
-            </div>
-        }
-
-        <div>
+        <div className="justify-self-end">
             <span className="text-yellow-200">{manufacturer}</span>
         </div>
     </div>
