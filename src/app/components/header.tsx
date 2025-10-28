@@ -13,7 +13,7 @@ export default function Header() {
 
           <div className="flex-shrink-0">
             <Link href="/" className="text-xl font-bold text-gray-100">
-              Search Engine
+              Borderlands 4 Weapon Creator
             </Link>
           </div>
 
