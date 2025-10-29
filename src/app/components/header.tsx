@@ -18,12 +18,12 @@ export default function Header() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link 
+            {/* <Link 
               href="#" 
               className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors duration-200"
             >
               Login
-            </Link>
+            </Link> */}
 
             <button 
               className="md:hidden p-2 bg-gray-100"

@@ -6,15 +6,45 @@ import { useForm } from '@mantine/form';
 import { randomId } from '@mantine/hooks';
 import { ActionIcon, Button, Group, Input, Space, SegmentedControl, Fieldset, SimpleGrid, NumberInput, NativeSelect, Center, Box, Grid } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
+import { ItemCard, TItemRarity, IElementalEffects, IItemAttributes } from './components/ItemCard/ItemCard';
+
+interface IElementalEffectsForm extends IElementalEffects {
+  key:string;
+}
+interface Attribute extends IItemAttributes{
+  key: string;
+}
+
+interface WeaponForm {
+  name: string;
+  level: number;
+  manufacturer: string;
+  rarity: TItemRarity;
+  dps: string;
+  image: string;
+  type: string;
+  class: string;
+  shieldType: string;
+  artilleryType: string;
+  weaponType: string;
+  damage: string;
+  accuracy: string;
+  reloadSpeed: string;
+  fireRate: string;
+  magazineSize: string;
+  elementalEffects: IElementalEffectsForm[];
+  attributes: Attribute[];
+  description: string;
+}
 
 export default function Home() {
-  const form = useForm({
+  const form = useForm<WeaponForm>({
     mode: 'uncontrolled',
     initialValues: {
       name: '',
       level: 1,
       manufacturer: '',
-      rarity: '',
+      rarity: 'common',
       dps: '',
       image: '',
       type: '',
@@ -27,12 +57,8 @@ export default function Home() {
       reloadSpeed: '', 
       fireRate: '', 
       magazineSize: '', 
-      elementalEffects: [
-        {type:'', damagePerSecond:'', chanceToApply:'', cryoEffectiveness:'', key: randomId()}
-      ],
-      attributes: [
-        {icon:'', description:'', key: randomId()}
-      ],
+      elementalEffects: [],
+      attributes: [],
       description: ''
     },
     onValuesChange: (values) => {
@@ -55,7 +81,13 @@ export default function Home() {
             <Center>
               <Box>
                 <SegmentedControl 
-                  data={['E', 'F', 'Co', 'R', 'Cr']}
+                  data={[
+                    { value: 'shock', label: 'E' },
+                    { value: 'fire', label: 'F' },
+                    { value: 'corrosive', label: 'Co' },
+                    { value: 'radiation', label: 'R' },
+                    { value: 'cryo', label: 'Cr' },
+                  ]}
                   key={form.key(`elementalEffects.${index}.type`)}
                   {...form.getInputProps(`elementalEffects.${index}.type`)}
                   />
@@ -97,12 +129,17 @@ export default function Home() {
               {...form.getInputProps(`attributes.${index}.icon`)}
               />
           </Grid.Col>
-          <Grid.Col span={8}>
+          <Grid.Col span={7}>
             <Input 
               placeholder="Descripcion" 
               key={form.key(`attributes.${index}.description`)}
               {...form.getInputProps(`attributes.${index}.description`)}
               />
+          </Grid.Col>
+          <Grid.Col span={1}>
+            <ActionIcon color="red" onClick={() => form.removeListItem('attributes', index)}>
+              <IconTrash size={16} />
+            </ActionIcon>
           </Grid.Col>
         </Grid>
       </Fieldset>
@@ -112,223 +149,264 @@ export default function Home() {
   return (
     <div>
       <Header/>
-      <div className="w-[50%] p-10">
-        <form onSubmit={form.onSubmit((values) => {
-            console.log(values);
-            setSubmittedValues(values);
-          })}>
+      <SimpleGrid cols={2} spacing="xs">
+        <div className="p-5">
+          <form onSubmit={form.onSubmit((values) => {
+              console.log(values);
+              setSubmittedValues(values);
+            })}>
 
-          <Fieldset legend="Nombre del Objeto">
-              <AutocompleteLoading 
-                placeholder="Item" 
-                key={form.key('name')} 
-                {...form.getInputProps('name')}
+            <Fieldset legend="Nombre del Objeto">
+                {/* <AutocompleteLoading 
+                  placeholder="Item" 
+                  key={form.key('name')} 
+                  {...form.getInputProps('name')}
+                  /> */}
+                  <Input 
+                    placeholder="Objeto" 
+                    key={form.key('name')}
+                    {...form.getInputProps('name')}
+                    />
+            </Fieldset>
+            
+            <Fieldset legend="Caracteristicas de Objeto">
+                <Fieldset legend="Fabricante">
+                  <Center>
+                    <Box>
+                      <SegmentedControl 
+                        data={[
+                          'Maliwan', 
+                          'Ripper', 
+                          'Order', 
+                          'Jakobs', 
+                          'Torgue',
+                          'Daedalus',
+                          'Tediore',
+                        ]} 
+                        key={form.key('manufacturer')} 
+                        {...form.getInputProps('manufacturer')}
+                        />
+                    </Box>
+                  </Center>
+                </Fieldset>
+
+                <Fieldset legend="Rareza">
+                  <Center>
+                    <Box>
+                      <SegmentedControl 
+                        data={[
+                          { value: 'common', label: 'Común' },
+                          { value: 'uncommon', label: 'Poco Común' },
+                          { value: 'rare', label: 'Raro' },
+                          { value: 'epic', label: 'Epico' },
+                          { value: 'legendary', label: 'Legendario' },
+                        ]}
+                        key={form.key('rarity')} 
+                        {...form.getInputProps('rarity')}
+                        />
+                    </Box>
+                  </Center>
+                </Fieldset>
+
+                <SimpleGrid cols={2} spacing="xs">
+                  <NumberInput
+                    label="Nivel del Objeto"
+                    placeholder="Valores de 1 a 50"
+                    min={1}
+                    max={50}
+                    key={form.key('level')} 
+                    {...form.getInputProps('level')}
+                  />
+                  <NumberInput
+                    label="Daño por segundo"
+                    placeholder="Valores de 1 a 1000000"
+                    min={1}
+                    max={1000000}
+                    key={form.key('dps')} 
+                    {...form.getInputProps('dps')}
+                  />
+                </SimpleGrid>
+              <NativeSelect 
+                label="Imagen del arma" 
+                data={['Imagen1', 'Imagen2', 'imagen3', 'Imagen4']}
+                key={form.key('image')} 
+                {...form.getInputProps('image')} 
                 />
-          </Fieldset>
-          
-          <Fieldset legend="Caracteristicas de Objeto">
-              <Fieldset legend="Fabricante">
-                <Center>
-                  <Box>
-                    <SegmentedControl 
-                      data={[
-                        'Maliwan', 
-                        'Ripper', 
-                        'Order', 
-                        'Jakobs', 
-                        'Torgue',
-                        'Daedalus',
-                        'Tediore',
-                      ]} 
-                      key={form.key('manufacturer')} 
-                      {...form.getInputProps('manufacturer')}
-                      />
-                  </Box>
-                </Center>
-              </Fieldset>
+            </Fieldset>
+            
+            <Fieldset legend="Tipo de Item">
+              <Center>
+                <Box>
+                  <SegmentedControl 
+                    disabled
+                    data={['Arma', 'Artilleria', 'Escudo', 'Kit de reparación', 'Mejora', 'Modificador de clase']}
+                    key={form.key('type')} 
+                    {...form.getInputProps('type')} 
+                    />
+                </Box>
+              </Center>
+            </Fieldset>
 
-              <Fieldset legend="Rareza">
-                <Center>
-                  <Box>
-                    <SegmentedControl 
-                      data={['Comun', 'Poco Común', 'Raro', 'Epico', 'Legendario']}
-                      key={form.key('rarity')} 
-                      {...form.getInputProps('rarity')}
-                      />
-                  </Box>
-                </Center>
-              </Fieldset>
+            { formValues.type === 'Modificador de clase' && <Fieldset legend="Clase">
+              <Center>
+                <Box>
+                  <SegmentedControl 
+                    data={['Sirena', 'Soldado', 'Forjador', 'Gravitaria']}
+                    key={form.key('class')} 
+                    {...form.getInputProps('class')} 
+                    />
+                </Box>
+              </Center>
+            </Fieldset>}
 
-              <SimpleGrid cols={2} spacing="xs">
+            { formValues.type === 'Escudo' && <Fieldset legend="Tipo de escudo">
+              <Center>
+                <Box>
+                  <SegmentedControl 
+                    data={['Escudo de energía', 'Escudo de placas']}
+                    key={form.key('shieldType')} 
+                    {...form.getInputProps('shieldType')} 
+                    />
+                </Box>
+              </Center>
+            </Fieldset>}
+
+            { formValues.type === 'Artilleria' && <Fieldset legend="Tipo de Artilleria">
+              <Center>
+                <Box>
+                  <SegmentedControl 
+                    data={['Cuchillo', 'Artilleria de granada', 'Artilleria de granadas', 'Artilleria de armas pesadas', ]}
+                    key={form.key('artilleryType')} 
+                    {...form.getInputProps('artilleryType')} 
+                    />
+                </Box>
+              </Center>
+            </Fieldset>}
+
+            { formValues.type === 'Arma' &&  <Fieldset legend="Tipo de Arma">
+              <Center>
+                <Box>
+                  <SegmentedControl 
+                    data={['Escopeta', 'Subfusil', 'Fusil de Francotirador', 'Fusil de asalto', 'Pistola']}
+                    key={form.key('weaponType')} 
+                    {...form.getInputProps('weaponType')} 
+                    />
+                </Box>
+              </Center>
+            </Fieldset>}
+            
+            <Fieldset legend="Caracteristicas del Objeto">
+              <SimpleGrid cols={5} spacing="xs">
                 <NumberInput
-                  label="Nivel del Objeto"
-                  placeholder="Valores de 1 a 50"
-                  min={1}
-                  max={50}
-                  key={form.key('level')} 
-                  {...form.getInputProps('level')}
+                    label="Daño"
+                    placeholder="1"
+                    min={1}
+                    max={1000000}
+                    key={form.key('damage')} 
+                    {...form.getInputProps('damage')}
                 />
                 <NumberInput
-                  label="Daño por segundo"
-                  placeholder="Valores de 1 a 1000000"
-                  min={1}
-                  max={1000000}
-                  key={form.key('dps')} 
-                  {...form.getInputProps('dps')}
+                    label="Precision"
+                    placeholder="1"
+                    min={1}
+                    max={1000000}
+                    key={form.key('accuracy')} 
+                    {...form.getInputProps('accuracy')}
+                />
+                <NumberInput
+                    label="Velocidad de recarga"
+                    placeholder="1"
+                    min={1}
+                    max={1000000}
+                    key={form.key('reloadSpeed')} 
+                    {...form.getInputProps('reloadSpeed')}
+                />
+                <NumberInput
+                    label="Cadencia de fuego"
+                    placeholder="1"
+                    min={1}
+                    max={1000000}
+                    key={form.key('fireRate')} 
+                    {...form.getInputProps('fireRate')}
+                />
+                <NumberInput
+                    label="Tamaño de cargador"
+                    placeholder="1"
+                    min={1}
+                    max={1000000}
+                    key={form.key('magazineSize')} 
+                    {...form.getInputProps('magazineSize')}
                 />
               </SimpleGrid>
-            <NativeSelect 
-              label="Imagen del arma" 
-              data={['Imagen1', 'Imagen2', 'imagen3', 'Imagen4']}
-              key={form.key('image')} 
-              {...form.getInputProps('image')} 
-              />
-          </Fieldset>
-          
-          <Fieldset legend="Tipo de Item">
-            <Center>
-              <Box>
-                <SegmentedControl 
-                  data={['Arma', 'Artilleria', 'Escudo', 'Kit de reparación', 'Mejora', 'Modificador de clase']}
-                  key={form.key('type')} 
-                  {...form.getInputProps('type')} 
-                  />
-              </Box>
-            </Center>
-          </Fieldset>
+            </Fieldset>
+            
+            <Fieldset legend="Efectos Elementales">
+              {elementalEffectsItems}
+              <Group justify="center" mt="md">
+                <Button
+                  onClick={() =>
+                    form.insertListItem('elementalEffects', { type:'', damagePerSecond:'', chanceToApply:'', cryoEffectiveness:'', key: randomId()})
+                  }
+                >
+                  Añadir Elemento
+                </Button>
+              </Group>
+            </Fieldset>
 
-          { formValues.type === 'Modificador de clase' && <Fieldset legend="Clase">
-            <Center>
-              <Box>
-                <SegmentedControl 
-                  data={['Sirena', 'Soldado', 'Forjador', 'Gravitaria']}
-                  key={form.key('class')} 
-                  {...form.getInputProps('class')} 
-                  />
-              </Box>
-            </Center>
-          </Fieldset>}
+            <Fieldset legend="Atributos">
+              {attributesItems}
+              <Group justify="center" mt="md">
+                <Button
+                  onClick={() =>
+                    form.insertListItem('attributes', {icon:'', description:'', key: randomId()})
+                  }
+                >
+                  Añadir Atributo
+                </Button>
+              </Group>
+            </Fieldset>
+            
+            { formValues.rarity === 'legendary' &&  <Fieldset legend="Descripcion">
+              <Input 
+                placeholder="Descripcion" 
+                key={form.key('description')} 
+                {...form.getInputProps('description')}
+                />
+            </Fieldset>}
 
-          { formValues.type === 'Escudo' && <Fieldset legend="Tipo de escudo">
-            <Center>
-              <Box>
-                <SegmentedControl 
-                  data={['Escudo de energía', 'Escudo de placas']}
-                  key={form.key('shieldType')} 
-                  {...form.getInputProps('shieldType')} 
-                  />
-              </Box>
-            </Center>
-          </Fieldset>}
-
-          { formValues.type === 'Artilleria' && <Fieldset legend="Tipo de Artilleria">
-            <Center>
-              <Box>
-                <SegmentedControl 
-                  data={['Cuchillo', 'Artilleria de granada', 'Artilleria de granadas', 'Artilleria de armas pesadas', ]}
-                  key={form.key('artilleryType')} 
-                  {...form.getInputProps('artilleryType')} 
-                  />
-              </Box>
-            </Center>
-          </Fieldset>}
-
-          { formValues.type === 'Arma' &&  <Fieldset legend="Tipo de Arma">
-            <Center>
-              <Box>
-                <SegmentedControl 
-                  data={['Escopeta', 'Subfusil', 'Fusil de Francotirador', 'Fusil de asalto', 'Pistola']}
-                  key={form.key('weaponType')} 
-                  {...form.getInputProps('weaponType')} 
-                  />
-              </Box>
-            </Center>
-          </Fieldset>}
-          
-          <Fieldset legend="Caracteristicas del Objeto">
-            <SimpleGrid cols={5} spacing="xs">
-              <NumberInput
-                  label="Daño"
-                  placeholder="1"
-                  min={1}
-                  max={1000000}
-                  key={form.key('damage')} 
-                  {...form.getInputProps('damage')}
-              />
-              <NumberInput
-                  label="Precision"
-                  placeholder="1"
-                  min={1}
-                  max={1000000}
-                  key={form.key('accuracy')} 
-                  {...form.getInputProps('accuracy')}
-              />
-              <NumberInput
-                  label="Velocidad de recarga"
-                  placeholder="1"
-                  min={1}
-                  max={1000000}
-                  key={form.key('reloadSpeed')} 
-                  {...form.getInputProps('reloadSpeed')}
-              />
-              <NumberInput
-                  label="Cadencia de fuego"
-                  placeholder="1"
-                  min={1}
-                  max={1000000}
-                  key={form.key('fireRate')} 
-                  {...form.getInputProps('fireRate')}
-              />
-              <NumberInput
-                  label="Tamaño de cargador"
-                  placeholder="1"
-                  min={1}
-                  max={1000000}
-                  key={form.key('magazineSize')} 
-                  {...form.getInputProps('magazineSize')}
-              />
-            </SimpleGrid>
-          </Fieldset>
-          
-          <Fieldset legend="Efectos Elementales">
-            {elementalEffectsItems}
-            <Group justify="center" mt="md">
-              <Button
-                onClick={() =>
-                  form.insertListItem('elementalEffects', { type:'', damagePerSecond:'', chanceToApply:'', cryoEffectiveness:'', key: randomId()})
-                }
-              >
-                Añadir Elemento
-              </Button>
-            </Group>
-          </Fieldset>
-
-          <Fieldset legend="Atributos">
-            {attributesItems}
-            <Group justify="center" mt="md">
-              <Button
-                onClick={() =>
-                  form.insertListItem('elementalEffects', { type:'', damagePerSecond:'', chanceToApply:'', cryoEffectiveness:'', key: randomId()})
-                }
-              >
-                Añadir Atributo
-              </Button>
-            </Group>
-          </Fieldset>
-          
-          { formValues.rarity === 'Legendario' &&  <Fieldset legend="Descripcion">
-            <Input 
-              placeholder="Descripcion" 
-              key={form.key('description')} 
-              {...form.getInputProps('description')}
-              />
-          </Fieldset>}
-
-          {/* <Group justify="flex-end" mt="md">
-            <Button type="submit">Submit</Button>
-          </Group> */}
-        </form>
-      </div>
+            {/* <Group justify="flex-end" mt="md">
+              <Button type="submit">Submit</Button>
+            </Group> */}
+          </form>
+        </div>
+        <div className=''>
+          <Center>
+            <ItemCard 
+              itemName={formValues.name}
+              itemLevel={formValues.level}
+              itemRarity={formValues.rarity}
+              itemType="weapon"
+              itemSubType="sniper"
+              itemDPS={parseInt(formValues.dps)}
+              hasElementalEffect={formValues.elementalEffects.length > 0}
+              elementalEffects={
+                formValues.elementalEffects
+              }
+              itemProperties={{
+                  damage: !isNaN(parseInt(formValues.damage)) ? formValues.damage : '0',
+                  accuracy: !isNaN(parseInt(formValues.accuracy)) ? parseInt(formValues.accuracy) : 0,
+                  reloadSpeed: formValues.reloadSpeed,
+                  fireRate: formValues.fireRate,
+                  magazineSize: !isNaN(parseInt(formValues.magazineSize)) ?  parseInt(formValues.magazineSize) : 0
+              }}
+              attributes={formValues.attributes}
+              descriptionText={formValues.description}
+              manufacturer={formValues.manufacturer}
+              language={'spanish'}
+            />   
+          </Center>
+        </div>
+      </SimpleGrid>
 
     </div>
   );
