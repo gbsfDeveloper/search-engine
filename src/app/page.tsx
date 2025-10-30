@@ -1,12 +1,11 @@
 'use client';
 import {useState} from 'react';
 import Header from "./components/Header";
-import { AutocompleteLoading } from "./components/AutocompleteInput";
 import { useForm } from '@mantine/form';
 import { randomId } from '@mantine/hooks';
-import { ActionIcon, Button, Group, Input, Space, SegmentedControl, Fieldset, SimpleGrid, NumberInput, NativeSelect, Center, Box, Grid } from '@mantine/core';
+import { InputBase, Combobox, useCombobox, Select, Image, ActionIcon, Button, Group, Input, Space, SegmentedControl, Fieldset, SimpleGrid, NumberInput, NativeSelect, Center, Box, Grid } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
-import { ItemCard, TItemRarity, IElementalEffects, IItemAttributes } from './components/ItemCard/ItemCard';
+import { ItemCard, TItemRarity, IElementalEffects, IItemAttributes, TItemType, TWeaponSubtypes } from './components/ItemCard/ItemCard';
 
 interface IElementalEffectsForm extends IElementalEffects {
   key:string;
@@ -22,11 +21,11 @@ interface WeaponForm {
   rarity: TItemRarity;
   dps: string;
   image: string;
-  type: string;
+  type: TItemType;
   class: string;
   shieldType: string;
   artilleryType: string;
-  weaponType: string;
+  weaponType: TWeaponSubtypes;
   damage: string;
   accuracy: string;
   reloadSpeed: string;
@@ -43,20 +42,20 @@ export default function Home() {
     initialValues: {
       name: '',
       level: 1,
-      manufacturer: '',
+      manufacturer: 'Maliwan',
       rarity: 'common',
       dps: '',
       image: '',
-      type: '',
+      type: 'weapon',
       class: '',
       shieldType: '',
       artilleryType: '',
-      weaponType: '', 
-      damage: '', 
-      accuracy: '', 
-      reloadSpeed: '', 
-      fireRate: '', 
-      magazineSize: '', 
+      weaponType: 'shotgun', 
+      damage: '0', 
+      accuracy: '0', 
+      reloadSpeed: '0', 
+      fireRate: '0', 
+      magazineSize: '0', 
       elementalEffects: [],
       attributes: [],
       description: ''
@@ -69,9 +68,26 @@ export default function Home() {
     },
   });
 
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+  });
+
+  const formValues = form.getValues();
+  
+  const options = [
+    {image: '/icons/accuracy_increased_on_continuos_fire_icon.png', key: randomId()}
+  ].map((item) => (
+    <Combobox.Option value={item.image} key={item.key}>
+      <Image
+        radius="md"
+        w={30}
+        src={item.image}
+      />
+    </Combobox.Option>
+  ));
+
   const [submittedValues, setSubmittedValues] = useState<typeof form.values | null>(null);
   
-  const formValues = form.getValues();
 
   const elementalEffectsItems = formValues.elementalEffects.map((item, index) => (
     <Group key={item.key} mt="xs" grow>
@@ -118,18 +134,54 @@ export default function Home() {
     </Group>
   ));
 
+  const [value, setValue] = useState<string | null>(null);
+
   const attributesItems = formValues.attributes.map((item, index) => (
     <Group key={item.key} grow>
-      <Fieldset legend={`Attribute ${index + 1}`} >
-        <Grid>
-          <Grid.Col span={4}>
-            <NativeSelect 
-              data={['Icono', 'Imagen1', 'Imagen2', 'Imagen3']} 
-              key={form.key(`attributes.${index}.icon`)}
-              {...form.getInputProps(`attributes.${index}.icon`)}
+      <Fieldset legend={`Attribute ${index + 1}`}>
+        <Grid grow>
+          <Grid.Col span={2}>
+            <Combobox
+              store={combobox}
+              onOptionSubmit={(val) => {
+                console.log({val});
+                
+                // setValue(val);
+                form.setFieldValue(`attributes.${index}.icon`, val);
+                combobox.closeDropdown();
+              }}
+              
+            >
+              <Combobox.Target>
+                <InputBase
+                  component="button"
+                  type="button"
+                  pointer
+                  rightSection={<Combobox.Chevron />}
+                  rightSectionPointerEvents="none"
+                  onClick={() => combobox.toggleDropdown()}
+                >
+                  {item.icon ? <Image
+                      radius="md"
+                      w={20}
+                      src={item.icon}
+                    /> : <Input.Placeholder></Input.Placeholder>}
+                </InputBase>
+              </Combobox.Target>
+
+              <Combobox.Dropdown>
+                <Combobox.Options>{options}</Combobox.Options>
+              </Combobox.Dropdown>
+            </Combobox>
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <Input 
+              placeholder="Titulo" 
+              key={form.key(`attributes.${index}.name`)}
+              {...form.getInputProps(`attributes.${index}.name`)}
               />
           </Grid.Col>
-          <Grid.Col span={7}>
+          <Grid.Col span={5}>
             <Input 
               placeholder="Descripcion" 
               key={form.key(`attributes.${index}.description`)}
@@ -234,12 +286,19 @@ export default function Home() {
                 />
             </Fieldset>
             
-            <Fieldset legend="Tipo de Item">
+            <Fieldset legend="Tipo de Objeto">
               <Center>
                 <Box>
                   <SegmentedControl 
                     disabled
-                    data={['Arma', 'Artilleria', 'Escudo', 'Kit de reparación', 'Mejora', 'Modificador de clase']}
+                    data={[
+                      { value: 'weapon', label: 'Arma' },
+                      { value: 'artillery', label: 'Artilleria' },
+                      { value: 'shield', label: 'Escudo' },
+                      { value: 'medikit', label: 'Kit de reparación' },
+                      { value: 'improvement', label: 'Mejora' },
+                      { value: 'classMod', label: 'Modificador de clase' },
+                    ]}
                     key={form.key('type')} 
                     {...form.getInputProps('type')} 
                     />
@@ -247,7 +306,7 @@ export default function Home() {
               </Center>
             </Fieldset>
 
-            { formValues.type === 'Modificador de clase' && <Fieldset legend="Clase">
+            { formValues.type === 'classMod' && <Fieldset legend="Clase">
               <Center>
                 <Box>
                   <SegmentedControl 
@@ -259,7 +318,7 @@ export default function Home() {
               </Center>
             </Fieldset>}
 
-            { formValues.type === 'Escudo' && <Fieldset legend="Tipo de escudo">
+            { formValues.type === 'shield' && <Fieldset legend="Tipo de escudo">
               <Center>
                 <Box>
                   <SegmentedControl 
@@ -271,7 +330,7 @@ export default function Home() {
               </Center>
             </Fieldset>}
 
-            { formValues.type === 'Artilleria' && <Fieldset legend="Tipo de Artilleria">
+            { formValues.type === 'artillery' && <Fieldset legend="Tipo de Artilleria">
               <Center>
                 <Box>
                   <SegmentedControl 
@@ -283,11 +342,17 @@ export default function Home() {
               </Center>
             </Fieldset>}
 
-            { formValues.type === 'Arma' &&  <Fieldset legend="Tipo de Arma">
+            { formValues.type === 'weapon' &&  <Fieldset legend="Tipo de Arma">
               <Center>
                 <Box>
                   <SegmentedControl 
-                    data={['Escopeta', 'Subfusil', 'Fusil de Francotirador', 'Fusil de asalto', 'Pistola']}
+                    data={[
+                      { value: 'shotgun', label: 'Escopeta' },
+                      { value: 'sniper', label: 'Fusil de francotirador' },
+                      { value: 'assaultRifle', label: 'Fusil de asalto' },
+                      { value: 'pistol', label: 'Pistola' },
+                      { value: 'smg', label: 'Subfusil' },
+                    ]}
                     key={form.key('weaponType')} 
                     {...form.getInputProps('weaponType')} 
                     />
@@ -345,7 +410,7 @@ export default function Home() {
               <Group justify="center" mt="md">
                 <Button
                   onClick={() =>
-                    form.insertListItem('elementalEffects', { type:'', damagePerSecond:'', chanceToApply:'', cryoEffectiveness:'', key: randomId()})
+                    form.insertListItem('elementalEffects', { type:'fire', damagePerSecond:'', chanceToApply:'', cryoEffectiveness:'', key: randomId()})
                   }
                 >
                   Añadir Elemento
@@ -358,7 +423,7 @@ export default function Home() {
               <Group justify="center" mt="md">
                 <Button
                   onClick={() =>
-                    form.insertListItem('attributes', {icon:'', description:'', key: randomId()})
+                    form.insertListItem('attributes', {icon:'', name:'', description:'', key: randomId()})
                   }
                 >
                   Añadir Atributo
@@ -385,8 +450,8 @@ export default function Home() {
               itemName={formValues.name}
               itemLevel={formValues.level}
               itemRarity={formValues.rarity}
-              itemType="weapon"
-              itemSubType="sniper"
+              itemType={formValues.type}
+              itemSubType={formValues.weaponType}
               itemDPS={parseInt(formValues.dps)}
               hasElementalEffect={formValues.elementalEffects.length > 0}
               elementalEffects={

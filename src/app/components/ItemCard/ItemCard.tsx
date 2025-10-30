@@ -41,10 +41,10 @@ const ARTILLERY_SUBTYPES = {
     'plasmGranade': {english: 'Assault Rifle', spanish: 'Fusil de asalto'},
 }
 
-type TWeaponSubtypes = keyof typeof WEAPON_SUBTYPES;
+export type TWeaponSubtypes = keyof typeof WEAPON_SUBTYPES;
 type TArtillerySubtypes = keyof typeof ARTILLERY_SUBTYPES;
 export type TItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
-type TItemType = 'weapon' | 'shield' | 'artillery' | 'classMod';
+export type TItemType = 'weapon' | 'shield' | 'artillery' | 'classMod';
 interface IItemCardProps {
   itemName: string;
   itemImage?: number;
@@ -175,15 +175,15 @@ export const  ItemCard = ({
                     attributes.map((value, index)=>(
                         <div key={index} className="flex gap-1 items-center">
                             <div className="grid place-items-center bg-attributes-icon-bg w-[50px] h-[50px] min-w-[50px]">
-                                <Image
+                                {value.icon && <Image
                                     alt={value.name}
                                     width={30}
                                     height={30}
                                     src={value.icon}
-                                />
+                                />}
                             </div>
                             <div className="text-sm">
-                                <span>{value.name}:{value.description}</span>
+                                <span>{value.name}: {value.description}</span>
                             </div>
                         </div>
                     ))
