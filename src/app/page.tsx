@@ -20,7 +20,7 @@ interface WeaponForm {
   manufacturer: string;
   rarity: TItemRarity;
   dps: string;
-  image: string;
+  itemImage: string;
   type: TItemType;
   class: string;
   shieldType: string;
@@ -45,7 +45,7 @@ export default function Home() {
       manufacturer: 'Maliwan',
       rarity: 'common',
       dps: '',
-      image: '',
+      itemImage: '',
       type: 'weapon',
       class: '',
       shieldType: '',
@@ -68,13 +68,9 @@ export default function Home() {
     },
   });
 
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
-
   const formValues = form.getValues();
   
-  const options = [
+  const attributeIconOptions = [
     {image: '/icons/accuracy_increased_on_continuos_fire_icon.png', key: randomId()}
   ].map((item) => (
     <Combobox.Option value={item.image} key={item.key}>
@@ -86,8 +82,40 @@ export default function Home() {
     </Combobox.Option>
   ));
 
-  const [submittedValues, setSubmittedValues] = useState<typeof form.values | null>(null);
+  const weaponImages = {
+    'spanish':{},
+    'english':{
+      'sniper':'/icons/sniper_weapon_icon.png',
+      'pistol':'/icons/pistol_weapon_icon.png',
+      'shotgun':'/icons/shotgun_weapon_icon.png',
+      'smg':'/icons/submachinegun_weapon_icon.png',
+      'rifle':'/icons/rifle_weapon_icon.png',
+    }
+  }
   
+  const weaponImageOptions = [
+    {image: '/icons/sniper_weapon_icon.png', key: randomId()},
+    {image: '/icons/pistol_weapon_icon.png', key: randomId()},
+    {image: '/icons/shotgun_weapon_icon.png', key: randomId()},
+    {image: '/icons/submachinegun_weapon_icon.png', key: randomId()},
+    {image: '/icons/rifle_weapon_icon.png', key: randomId()},
+  ].map((item) => (
+    <Combobox.Option value={item.image} key={item.key}>
+      <Center>
+        <Image
+          radius="md"
+          w={100}
+          src={item.image}
+        />
+      </Center>
+    </Combobox.Option>
+  ));
+
+  const weaponCombobox = useCombobox({
+    onDropdownClose: () => weaponCombobox.resetSelectedOption(),
+  });
+
+  const [submittedValues, setSubmittedValues] = useState<typeof form.values | null>(null);
 
   const elementalEffectsItems = formValues.elementalEffects.map((item, index) => (
     <Group key={item.key} mt="xs" grow>
@@ -136,66 +164,90 @@ export default function Home() {
 
   const [value, setValue] = useState<string | null>(null);
 
-  const attributesItems = formValues.attributes.map((item, index) => (
-    <Group key={item.key} grow>
-      <Fieldset legend={`Attribute ${index + 1}`}>
-        <Grid grow>
-          <Grid.Col span={2}>
-            <Combobox
-              store={combobox}
-              onOptionSubmit={(val) => {
-                console.log({val});
-                
-                // setValue(val);
-                form.setFieldValue(`attributes.${index}.icon`, val);
-                combobox.closeDropdown();
-              }}
-              
-            >
-              <Combobox.Target>
-                <InputBase
-                  component="button"
-                  type="button"
-                  pointer
-                  rightSection={<Combobox.Chevron />}
-                  rightSectionPointerEvents="none"
-                  onClick={() => combobox.toggleDropdown()}
-                >
-                  {item.icon ? <Image
-                      radius="md"
-                      w={20}
-                      src={item.icon}
-                    /> : <Input.Placeholder></Input.Placeholder>}
-                </InputBase>
-              </Combobox.Target>
+  interface AttributeItemProps {
+    index: number;
+    item: any;
+    form: any;
+    onRemove: (index: number) => void;
+  }
 
-              <Combobox.Dropdown>
-                <Combobox.Options>{options}</Combobox.Options>
-              </Combobox.Dropdown>
-            </Combobox>
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <Input 
-              placeholder="Titulo" 
-              key={form.key(`attributes.${index}.name`)}
-              {...form.getInputProps(`attributes.${index}.name`)}
+  function AttributeItem({ index, item, form, onRemove }: AttributeItemProps) {
+    const combobox = useCombobox({
+      onDropdownClose: () => combobox.resetSelectedOption(),
+    });
+
+    return (
+      <Group key={item.key} grow>
+        <Fieldset legend={`Attribute ${index + 1}`}>
+          <Grid grow>
+            <Grid.Col span={2}>
+              <Combobox
+                store={combobox}
+                onOptionSubmit={(val) => {
+                  console.log({val});
+                  form.setFieldValue(`attributes.${index}.icon`, val);
+                  combobox.closeDropdown();
+                }}
+                key={form.key(`attributes.${index}.icon`)}
+                {...form.getInputProps(`attributes.${index}.icon`)}
+              >
+                <Combobox.Target>
+                  <InputBase
+                    component="button"
+                    type="button"
+                    pointer
+                    rightSection={<Combobox.Chevron />}
+                    rightSectionPointerEvents="none"
+                    onClick={() => combobox.toggleDropdown()}
+                  >
+                    {item.icon ? (
+                      <Image radius="md" w={20} src={item.icon} />
+                    ) : (
+                      <Input.Placeholder>Select icon</Input.Placeholder>
+                    )}
+                  </InputBase>
+                </Combobox.Target>
+
+                <Combobox.Dropdown>
+                  <Combobox.Options>
+                    {attributeIconOptions}
+                  </Combobox.Options>
+                </Combobox.Dropdown>
+              </Combobox>
+            </Grid.Col>
+            <Grid.Col span={3}>
+              <Input 
+                placeholder="Titulo" 
+                key={form.key(`attributes.${index}.name`)}
+                {...form.getInputProps(`attributes.${index}.name`)}
               />
-          </Grid.Col>
-          <Grid.Col span={5}>
-            <Input 
-              placeholder="Descripcion" 
-              key={form.key(`attributes.${index}.description`)}
-              {...form.getInputProps(`attributes.${index}.description`)}
+            </Grid.Col>
+            <Grid.Col span={5}>
+              <Input 
+                placeholder="Descripcion" 
+                key={form.key(`attributes.${index}.description`)}
+                {...form.getInputProps(`attributes.${index}.description`)}
               />
-          </Grid.Col>
-          <Grid.Col span={1}>
-            <ActionIcon color="red" onClick={() => form.removeListItem('attributes', index)}>
-              <IconTrash size={16} />
-            </ActionIcon>
-          </Grid.Col>
-        </Grid>
-      </Fieldset>
-    </Group>
+            </Grid.Col>
+            <Grid.Col span={1}>
+              <ActionIcon color="red" onClick={() => onRemove(index)}>
+                <IconTrash size={16} />
+              </ActionIcon>
+            </Grid.Col>
+          </Grid>
+        </Fieldset>
+      </Group>
+    );
+  }
+
+  const attributesItems = formValues.attributes.map((item, index) => (
+    <AttributeItem
+      key={item.key}
+      index={index}
+      item={item}
+      form={form}
+      onRemove={(index) => form.removeListItem('attributes', index)}
+    />
   ));
 
   return (
@@ -278,12 +330,42 @@ export default function Home() {
                     {...form.getInputProps('dps')}
                   />
                 </SimpleGrid>
-              <NativeSelect 
-                label="Imagen del arma" 
-                data={['Imagen1', 'Imagen2', 'imagen3', 'Imagen4']}
-                key={form.key('image')} 
-                {...form.getInputProps('image')} 
-                />
+                {/* <SimpleGrid cols={2} spacing="xs">
+                  <Combobox
+                    store={weaponCombobox}
+                    onOptionSubmit={(val) => {
+                      // console.log({val});
+                      form.setFieldValue(`itemImage`, val);
+                      weaponCombobox.closeDropdown();
+                    }}
+                    // key={form.key('itemImage')} 
+                    // {...form.getInputProps('itemImage')}
+                  >
+                    <Combobox.Target>
+                      <InputBase
+                        component="button"
+                        type="button"
+                        pointer
+                        rightSection={<Combobox.Chevron />}
+                        rightSectionPointerEvents="none"
+                        onClick={() => weaponCombobox.toggleDropdown()}
+                      >
+                        {formValues.itemImage ? (
+                          <Image radius="md" w={20} src={formValues.itemImage} />
+                        ) : (
+                          <Input.Placeholder>Select icon</Input.Placeholder>
+                        )}
+                      </InputBase>
+                    </Combobox.Target>
+
+                    <Combobox.Dropdown>
+                      <Combobox.Options>
+                        {weaponImageOptions}
+                      </Combobox.Options>
+                    </Combobox.Dropdown>
+                  </Combobox>
+                </SimpleGrid> */}
+                
             </Fieldset>
             
             <Fieldset legend="Tipo de Objeto">
@@ -438,16 +520,13 @@ export default function Home() {
                 {...form.getInputProps('description')}
                 />
             </Fieldset>}
-
-            {/* <Group justify="flex-end" mt="md">
-              <Button type="submit">Submit</Button>
-            </Group> */}
           </form>
         </div>
         <div className=''>
           <Center>
             <ItemCard 
               itemName={formValues.name}
+              itemImage={formValues.itemImage}
               itemLevel={formValues.level}
               itemRarity={formValues.rarity}
               itemType={formValues.type}

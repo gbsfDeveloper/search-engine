@@ -47,7 +47,7 @@ export type TItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 export type TItemType = 'weapon' | 'shield' | 'artillery' | 'classMod';
 interface IItemCardProps {
   itemName: string;
-  itemImage?: number;
+  itemImage?: string;
   itemLevel?: number;
   itemRarity?: TItemRarity;
   itemType?: TItemType;
@@ -299,13 +299,13 @@ export const  ItemCard = ({
     <div className="flex flex-col justify-between bg-card-background rounded-lg w-[420px] p-5 shadow-lg">
         <div className={firstSectionContainerStyles}>
             <div className="grid place-items-center bg-attributes-icon-bg min-w-[30px] absolute bottom-0 right-0 z-0">
-                <Image
+                {itemImage && <Image
                     className="w-[11rem] z-0"
                     alt={'Tiempo de recarga'}
                     width={30}
                     height={30}
-                    src={'/icons/sniper_weapon_icon.png'}
-                />
+                    src={itemImage}
+                />}
             </div>
             <div className="h-2"></div>
             <div className="grid grid-cols-4 text-center mb-1">
